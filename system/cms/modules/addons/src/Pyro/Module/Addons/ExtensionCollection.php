@@ -89,8 +89,8 @@ class ExtensionCollection extends EloquentCollection
             }
 
             // Remove where user does not have permission
-            if ($extension->role and $permission = ci()->module_details['slug'] . '.' . $extension->role) {
-                if (ci()->current_user->hasAccess($permission)) {
+            if ($extension->role) {
+                if (ci()->current_user->hasAccess($extension->role)) {
                     $extensions[$slug] = $extension;
                 }
             } else {
