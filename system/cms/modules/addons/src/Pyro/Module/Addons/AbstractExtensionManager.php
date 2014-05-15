@@ -6,22 +6,24 @@ use Illuminate\Support\Str;
 /**
  * PyroStreams Core Field Extension Library
  *
- * @package		PyroCMS\Core\Modules\Addons
- * @author		Parse19
- * @copyright	Copyright (c) 2011 - 2012, Parse19
- * @license		http://parse19.com/pyrostreams/docs/license
- * @link		http://parse19.com/pyrostreams
+ * @package        PyroCMS\Core\Modules\Addons
+ * @author         Parse19
+ * @copyright      Copyright (c) 2011 - 2012, Parse19
+ * @license        http://parse19.com/pyrostreams/docs/license
+ * @link           http://parse19.com/pyrostreams
  */
 abstract class AbstractExtensionManager
 {
     /**
      * The modules we're loading extensions from
+     *
      * @var string
      */
     protected static $modules = array();
 
     /**
      * The slugs of extensions found
+     *
      * @var string
      */
     protected static $slugs = array();
@@ -29,37 +31,41 @@ abstract class AbstractExtensionManager
     /**
      * Places where our extensions may be
      *
-     * @var		array
+     * @var        array
      */
     protected static $addonPaths = array();
 
     /**
      * Modules where dashboards may be
      *
-     * @var		array
+     * @var        array
      */
     protected static $modulePaths = array();
 
     /**
      * Core addon path
+     *
      * @var [extension]
      */
     protected static $coreAddonPath;
 
     /**
      * Available extensions
+     *
      * @var array
      */
     protected static $extensions = array();
 
     /**
      * The registry of extensions
+     *
      * @var array
      */
     protected static $extensionClasses = array();
 
     /**
      * Has the classes being initiated
+     *
      * @var arry
      */
     protected static $initiated = array();
@@ -73,45 +79,47 @@ abstract class AbstractExtensionManager
 
     /**
      * Get instance (singleton)
+     *
      * @return [extension] [description]
      */
     public static function init($module, $slug, $preload = false)
     {
         $instance = new static;
 
-        if (! isset(static::$initiated[get_called_class()])) {
+        if (!isset(static::$initiated[get_called_class()])) {
             ci()->load->helper('directory');
-            ci()->load->language($module.'/'.$module);
+            ci()->load->language($module . '/' . $module);
 
             // Get Lang (full name for language file)
             // This defaults to english.
             $langs = ci()->config->item('supported_languages');
 
             // Set the module, slug, paths and extensions
-            static::$modules[get_called_class()] = $module;
-            static::$slugs[get_called_class()] = $slug;
+            static::$modules[get_called_class()]     = $module;
+            static::$slugs[get_called_class()]       = $slug;
             static::$modulePaths[get_called_class()] = array();
-            static::$extensions[get_called_class()] = array();
+            static::$extensions[get_called_class()]  = array();
 
             $extensionPath = $instance::getExtensionPath($module, $slug);
 
             // Needed for installer
-            if ( ! class_exists('Settings')) {
+            if (!class_exists('Settings')) {
                 ci()->load->library('settings/Settings');
             }
 
             // Set our addon paths
             static::$addonPaths[get_called_class()] = array(
-                'addon' 		=> ADDONPATH.$extensionPath,
-                'addon_alt' 	=> SHARED_ADDONPATH.$extensionPath,
+                'addon'     => ADDONPATH . $extensionPath,
+                'addon_alt' => SHARED_ADDONPATH . $extensionPath,
             );
 
             // Set module paths
             $modules = new ModuleManager;
 
             foreach ($modules->getAllEnabled() as $enabledModule) {
-                if (is_dir($enabledModule['path'].'/'.$extensionPath)) {
-                    static::$modulePaths[get_called_class()][$enabledModule['slug']] = $enabledModule['path'].'/'.$extensionPath;
+                if (is_dir($enabledModule['path'] . '/' . $extensionPath)) {
+                    static::$modulePaths[get_called_class(
+                    )][$enabledModule['slug']] = $enabledModule['path'] . '/' . $extensionPath;
                 }
             }
 
@@ -127,17 +135,19 @@ abstract class AbstractExtensionManager
     /**
      * Get the extension path as it appears
      * after the addon / module path
+     *
      * @param  string $module
      * @param  string $slug
      * @return string
      */
     protected static function getExtensionPath($module, $slug)
     {
-        return 'extensions/'.$module.'/'.$slug.'/';
+        return 'extensions/' . $module . '/' . $slug . '/';
     }
 
     /**
      * Set addon path
+     *
      * @param string $key
      * @param string $path
      */
@@ -148,6 +158,7 @@ abstract class AbstractExtensionManager
 
     /**
      * Set module path
+     *
      * @param string $key
      * @param string $path
      */
@@ -158,6 +169,7 @@ abstract class AbstractExtensionManager
 
     /**
      * Get addon paths
+     *
      * @return array
      */
     public static function getAddonPaths()
@@ -167,6 +179,7 @@ abstract class AbstractExtensionManager
 
     /**
      * Get module paths
+     *
      * @return array
      */
     public static function getModulePaths()
@@ -176,23 +189,25 @@ abstract class AbstractExtensionManager
 
     /**
      * Get extension
+     *
      * @param  string  $extension
      * @param  boolean $gather_extensions
      * @return object
      */
     public static function getExtension($extension = null)
     {
-        if (! empty(static::$extensions[get_called_class()][$extension]) and is_object(static::$extensions[get_called_class()][$extension])) {
+        if (!empty(static::$extensions[get_called_class()][$extension]) and is_object(
+                static::$extensions[get_called_class()][$extension]
+            )
+        ) {
             $extension = static::$extensions[get_called_class()][$extension];
         } else {
             $extension = static::loadExtension($extension);
         }
 
         // Remove where user does not have permission
-        if ($extension and $extension->role and $extension->module) {
-            $permission = $extension->module . '.' . $extension->role;
-
-            if (ci()->current_user->hasAccess($permission)) {
+        if ($extension and $extension->role) {
+            if (ci()->current_user->hasAccess($extension->role)) {
                 return $extension;
             }
         } else {
@@ -204,6 +219,7 @@ abstract class AbstractExtensionManager
 
     /**
      * Register slug class
+     *
      * @param  array
      * @return void
      */
@@ -222,6 +238,7 @@ abstract class AbstractExtensionManager
 
     /**
      * Register folder extensions
+     *
      * @param  string  $folder
      * @param  array   $extensions
      * @param  boolean $preload
@@ -239,7 +256,7 @@ abstract class AbstractExtensionManager
             $extensions = directory_map($folder, 1);
         }
 
-        if (is_array($extensions) and ! empty($extensions)) {
+        if (is_array($extensions) and !empty($extensions)) {
 
             $loader = new ClassLoader;
 
@@ -255,7 +272,7 @@ abstract class AbstractExtensionManager
 
                 static::registerSlugClass($extension);
 
-                $loader->add(static::getClass($extension), $folder.$extension.'/src/');
+                $loader->add(static::getClass($extension), $folder . $extension . '/src/');
             }
 
             $loader->register();
@@ -270,6 +287,7 @@ abstract class AbstractExtensionManager
 
     /**
      * Register addon extensions
+     *
      * @param  boolean $preload
      * @return void
      */
@@ -282,6 +300,7 @@ abstract class AbstractExtensionManager
 
     /**
      * Register module extensions
+     *
      * @param  boolean $preload
      * @return void
      */
@@ -294,6 +313,7 @@ abstract class AbstractExtensionManager
 
     /**
      * Get class
+     *
      * @param  string $extension
      * @return string
      */
@@ -301,7 +321,7 @@ abstract class AbstractExtensionManager
     {
         $class = static::getClassBase($extension);
         $class .= static::getClassPath($extension);
-        $class .= '\\'.Str::studly($extension);
+        $class .= '\\' . Str::studly($extension);
         $class .= static::getClassSuffix($extension);
 
         return $class;
@@ -309,28 +329,31 @@ abstract class AbstractExtensionManager
 
     /**
      * Get base of class path
+     *
      * @param  string $extension
      * @return string
      */
     public static function getClassBase($extension)
     {
-        return 'Pyro\\Module\\'.Str::studly(static::$modules[get_called_class()]).'\\Extension';
+        return 'Pyro\\Module\\' . Str::studly(static::$modules[get_called_class()]) . '\\Extension';
     }
 
     /**
      * Get class path
+     *
      * @param  string $extension
      * @return string
      */
     public static function getClassPath($extension)
     {
-        $path = '\\'.Str::studly(static::$slugs[get_called_class()]);
+        $path = '\\' . Str::studly(static::$slugs[get_called_class()]);
 
         return $path;
     }
 
     /**
      * Get class suffix
+     *
      * @param  string $extension
      * @return string
      */
@@ -341,6 +364,7 @@ abstract class AbstractExtensionManager
 
     /**
      * Get classes
+     *
      * @return array
      */
     public static function getClasses()
@@ -350,6 +374,7 @@ abstract class AbstractExtensionManager
 
     /**
      * Get all extensions
+     *
      * @return array
      */
     public static function getAllExtensions($module = null, $extension = null)
@@ -365,6 +390,7 @@ abstract class AbstractExtensionManager
 
     /**
      * Get registered extensions
+     *
      * @return array
      */
     public static function getRegisteredExtensions()
@@ -375,11 +401,11 @@ abstract class AbstractExtensionManager
     /**
      * Get the extensions together as a big object
      *
-     * @return	void
+     * @return    void
      */
     public static function preload()
     {
-        static::registerFolderExtensions(static::$coreAddonPath.'extensions/', true, true);
+        static::registerFolderExtensions(static::$coreAddonPath . 'extensions/', true, true);
 
         static::registerExtensions(true);
 
@@ -390,16 +416,18 @@ abstract class AbstractExtensionManager
      * Load the actual extension into the
      * extensions object
      *
-     * @param	string - addon path
-     * @param	string - path to the file (with the file name)
-     * @param	string - the extension
-     * @param	string - mode
-     * @return	obj - the extension obj
+     * @param    string - addon path
+     * @param    string - path to the file (with the file name)
+     * @param    string - the extension
+     * @param    string - mode
+     * @return    obj - the extension obj
      */
     // $path, $file, $extension, $mode
     private static function loadExtension($extension)
     {
-        if (empty($extension) or empty(static::$extensionClasses[get_called_class()][$extension])) return null;
+        if (empty($extension) or empty(static::$extensionClasses[get_called_class()][$extension])) {
+            return null;
+        }
 
         $class = static::getClass($extension);
 
@@ -423,7 +451,7 @@ abstract class AbstractExtensionManager
          */
         $path = str_replace(FCPATH, '', dirname($class_path));
 
-        for ($x=1;$x<10;$x++) {
+        for ($x = 1; $x < 10; $x++) {
             $parts = explode('/', $path);
 
             if (end($parts) == $extension) {
@@ -434,47 +462,47 @@ abstract class AbstractExtensionManager
         }
 
         // Set asset paths
-        $instance->path = $path;
-        $instance->pathViews = $path.'/views/';
-        $instance->pathImg = $path.'/img/';
-        $instance->pathCss = $path.'/css/';
-        $instance->pathJs = $path.'/js/';
+        $instance->path      = $path;
+        $instance->pathViews = $path . '/views/';
+        $instance->pathImg   = $path . '/img/';
+        $instance->pathCss   = $path . '/css/';
+        $instance->pathJs    = $path . '/js/';
 
         // -------------------------
         // Load the language file
         // -------------------------
         $instance->langPrefix = static::getLangPrefix($extension);
 
-        if (is_dir($path) and is_dir($path.'/language')) {
+        if (is_dir($path) and is_dir($path . '/language')) {
 
             $lang = ci()->config->item('language');
 
             // Fallback on English.
-            if ( ! $lang) {
+            if (!$lang) {
                 $lang = 'english';
             }
 
-            if ( ! is_dir($path.$lang)) {
+            if (!is_dir($path . $lang)) {
                 $lang = 'english';
             }
 
-            ci()->lang->load(static::getLangFilename($extension, $type), $lang, false, false, $path.'/');
+            ci()->lang->load(static::getLangFilename($extension, $type), $lang, false, false, $path . '/');
 
             unset($lang);
         }
 
         // Extension name is languagized
-        if ( ! isset($instance->name)) {
-            $instance->name = lang_label('lang:'.$instance->langPrefix.'.name');
+        if (!isset($instance->name)) {
+            $instance->name = lang_label('lang:' . $instance->langPrefix . '.name');
         }
 
         // Extension description is languagized
-        if ( ! isset($instance->description)) {
-            $instance->description = lang_label('lang:'.$instance->langPrefix.'.description');
+        if (!isset($instance->description)) {
+            $instance->description = lang_label('lang:' . $instance->langPrefix . '.description');
         }
 
         if (isset(ci()->profiler)) {
-            ci()->profiler->log->info($class.' loaded');
+            ci()->profiler->log->info($class . ' loaded');
         }
 
         // Set the extension type
@@ -494,21 +522,23 @@ abstract class AbstractExtensionManager
 
     /**
      * Get the prefix string of the lang key
+     *
      * @return string
      */
     public static function getLangPrefix($extension)
     {
-        return 'extension.'.static::$slugs[get_called_class()].'.'.$extension;
+        return 'extension.' . static::$slugs[get_called_class()] . '.' . $extension;
     }
 
     /**
      * Get the filename of the extensions lang file
+     *
      * @param  string $extension
      * @param  string $type
      * @return string
      */
     public static function getLangFilename($extension, $type)
     {
-        return $extension.'_'.static::$slugs[get_called_class()].'_lang';
+        return $extension . '_' . static::$slugs[get_called_class()] . '_lang';
     }
 }
