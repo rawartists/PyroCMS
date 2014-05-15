@@ -207,22 +207,13 @@ abstract class AbstractExtensionManager
 
         // Remove where user does not have permission
         if ($extension and $extension->role) {
-            if (isset($extension->module)) {
-                if (is_string($extension->module)) {
-                    if ($permission = $extension->module . '.' . $extension->role and ci()->current_user->hasAccess(
+            if (isset($extension->modules) and is_array($extension->modules)) {
+                foreach ($extension->modules as $module) {
+                    if ($permission = $module . '.' . $extension->role and ci()->current_user->hasAccess(
                             $permission
                         )
                     ) {
                         return $extension;
-                    }
-                } elseif (is_array($extension->module)) {
-                    foreach ($extension->module as $module) {
-                        if ($permission = $module . '.' . $extension->role and ci()->current_user->hasAccess(
-                                $permission
-                            )
-                        ) {
-                            return $extension;
-                        }
                     }
                 }
             }
