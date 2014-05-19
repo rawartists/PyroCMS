@@ -72,8 +72,7 @@ class ExtensionCollection extends EloquentCollection
     /**
      * Available
      *
-     * @param $extensions
-     * @return mixed
+     * @return ExtensionCollection
      */
     public function available()
     {
@@ -82,19 +81,25 @@ class ExtensionCollection extends EloquentCollection
         foreach ($this->items as $slug => $extension) {
 
             // Remove where dependent module is not installed
-            if ($extension->module and module_installed($extension->module)) {
-                if (ci()->current_user->hasAccess($extension->module . '.*')) {
-                    $extensions[$slug] = $extension;
-                }
+            if ($extension->module and !module_installed($extension->module)) {
+                continue;
             }
 
-            // Remove where user does not have permission
-            if ($extension->role) {
-                if (ci()->current_user->hasAccess($extension->role)) {
-                    $extensions[$slug] = $extension;
+            //If modules are defined and the current module is in them. Party.
+            if (in_array(ci()->module_details['slug'], $extension->modules)) {
+                if (isset(ci()->module_details['slug']) and $extension->modules) {
+                    if (ci()->current_user->hasAccess($extension->module . '.*')) {
+
+                        if ($extension->role) {
+                            if (ci()->current_user->hasAccess($extension->role)) {
+                                $extensions[$slug] = $extension;
+                            }
+                        } else {
+                            $extensions[$slug] = $extension;
+                        }
+
+                    }
                 }
-            } else {
-                $extensions[$slug] = $extension;
             }
         }
 
