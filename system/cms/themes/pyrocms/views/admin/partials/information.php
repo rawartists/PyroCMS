@@ -19,7 +19,7 @@
 
         $main_group = 'Unknown';
 
-        $available_groups = ci()->current_user->groups;
+        /*$available_groups = ci()->current_user->groups;
 
         $i = 0;
         foreach (ci()->current_user->groups as $group) {
@@ -33,6 +33,7 @@
 
         $group_link = anchor('admin/users/edit/'.ci()->current_user->id,$main_group);
         echo '<span class="c-gray italic  ">' . $group_link . '</span>';
+        */
 
 
         ?>
