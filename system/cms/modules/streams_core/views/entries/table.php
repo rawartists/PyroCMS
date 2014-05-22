@@ -1,5 +1,5 @@
 <?php ci()->benchmark->mark('streams_core_entries_table_view_start');
-$buttons = true;
+//$buttons = true;
 ?>
 <?php if ($showFilters and !$disableFilters): ?>
 
@@ -90,7 +90,20 @@ $buttons = true;
         <?php ci()->benchmark->mark('streams_core_entries_table_view_column_headers_end'); ?>
         <tbody>
         <?php if ($entries->count() > 0): $i = 0; ?>
-            <?php foreach ($entries as $entry) { ?>
+            <?php foreach ($entries as $entry) {
+
+
+                $row_html = '';
+
+                $entry_key = md5($entry);
+
+                if($cached_entry = ci()->cache->get($entry_key)){
+                    echo $cached_entry;
+                    continue;
+                }
+
+                ?>
+
                 <?php
                 $i++;
                 ci()->benchmark->mark('streams_core_entries_table_view_entry_' . $i . '_start');
@@ -98,49 +111,68 @@ $buttons = true;
                 ?>
 
                 <?php  ci()->benchmark->mark('streams_core_entries_table_view_parse_entry_' . $i . '_start'); ?>
-                <?php /*$rowClass = ci()->parser->parse_string(
+                <?php $rowClass = ci()->parser->parse_string(
                     $tableRowClass,
                     $entry,
                     true,
                     false,
                     false,
                     false
-                ); */?>
+                ); ?>
                 <?php  ci()->benchmark->mark('streams_core_entries_table_view_parse_entry_' . $i . '_end'); ?>
 
-                <tr class="<?php //echo $rowClass; ?>">
+                <?php
 
-                    <?php if ($stream->sorting == 'custom'): ?>
-                        <td width="30" class="handle"><?php echo Asset::img(
-                                'icons/drag_handle.gif',
-                                'Drag Handle'
-                            ); ?></td>
-                    <?php endif; ?>
+                // Start the row
+                $row_html = '<tr class="'.$rowClass.'">';
 
-                    <?php if (!empty($viewOptions)): ?>
-                        <?php foreach ($viewOptions as &$viewOption): ?>
-                            <?php $class = isset($fields[$viewOption]['class']) ? $fields[$viewOption]['class'] : null; ?>
-                            <td class="<?php echo $class; ?>">
+                // Sorting ability
+                if ($stream->sorting == 'custom'):
 
-                                <input type="hidden" name="action_to[]" value="<?php echo $entry->getKey(); ?>"/>
-                                <?php ci()->benchmark->mark(
+                    $row_html .= '<td width="30" class="handle">';
+                    $row_html .= Asset::img(
+                            "icons/drag_handle.gif",
+                            "Drag Handle"
+                        );
+                    $row_html .= '</td>';
+
+                endif;
+
+                // Each field (column)
+                if (!empty($viewOptions)):
+
+                        // Iterate
+                        foreach ($viewOptions as &$viewOption):
+
+                            $class = isset($fields[$viewOption]['class']) ? $fields[$viewOption]['class'] : null;
+                            $row_html .= '<td class="'.$class.'">';
+                            $row_html .= '<input type="hidden" name="action_to[]" value="'.$entry->getKey().'"/>';
+
+                            ci()->benchmark->mark(
                                     'streams_core_entries_table_view_last_viewOption_' . $viewOption . '_start'
-                                ); ?>
-                                <?php echo $entry->{$viewOption}; ?>
-                                <?php ci()->benchmark->mark(
+                                );
+
+                            $row_html .= $entry->{$viewOption};
+
+                            $row_html .=
+
+                            ci()->benchmark->mark(
                                     'streams_core_entries_table_view_last_viewOption_' . $viewOption . '_end'
-                                ); ?>
+                                );
 
-                            </td>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                    <?php if ($buttons): ?>
-                        <?php ci()->benchmark->mark('streams_core_entries_table_view_buttons_start'); ?>
-                        <td class="text-right">
+                            $row_html .= '</td>';
 
-                            <?php
+                        endforeach; // viewOptions
 
-                            /*if (isset($buttons)) {
+                endif;
+
+
+                if ($buttons):
+                        ci()->benchmark->mark('streams_core_entries_table_view_buttons_start');
+
+                        $row_html .= '<td class="text-right">';
+
+                        if (isset($buttons)) {
                                 $all_buttons = array();
 
                                 foreach ($buttons as $button) {
@@ -149,9 +181,8 @@ $buttons = true;
                                     if (isset($button['html'])) {
                                         $all_buttons[] = ci()->parser->parse_string(
                                             $button['html'],
-                                            $entry->getPresenter('plugin')->toArray(),
+                                            get_object_vars($entry),
                                             true,
-                                            false,
                                             false
                                         );
                                         continue;
@@ -160,9 +191,8 @@ $buttons = true;
                                     // The second is kept for backwards compatibility
                                     $url = ci()->parser->parse_string(
                                         $button['url'],
-                                        $entry->getPresenter('plugin')->toArray(),
+                                        get_object_vars($entry),
                                         true,
-                                        false,
                                         false
                                     );
                                     $url = str_replace('-entry_id-', $entry->getKey(), $url);
@@ -175,23 +205,32 @@ $buttons = true;
 
                                     // Parse variables in attributes
                                     foreach ($button as $key => &$value) {
-                                        $value = ci()->parser->parse_string($value, $entry->toArray(), true);
+                                        $value = ci()->parser->parse_string($value, get_object_vars($entry), true);
                                     }
 
                                     $all_buttons[] = anchor($url, $label, $button);
                                 }
 
-                                echo implode('&nbsp;', $all_buttons);
+                                $row_html .=  implode('&nbsp;', $all_buttons);
                                 unset($all_buttons);
-                            }*/
+                            }
 
-                            echo call_user_func(function () use ($entry) { return $entry->id;});
 
-                            ?>
-                        </td>
+                        $row_html .= '</td>';
+
+                        ?>
                         <?php ci()->benchmark->mark('streams_core_entries_table_view_buttons_end'); ?>
                     <?php endif; ?>
-                </tr>
+                <?php $row_html .= '</tr>'; ?>
+
+                <?php
+
+                ci()->cache->put($entry_key, $row_html, 600);
+
+                echo $row_html;
+
+                ?>
+
                 <?php ci()->benchmark->mark('streams_core_entries_table_view_entry_' . $i . '_end'); ?>
             <?php } ?>
         <?php else: ?>
