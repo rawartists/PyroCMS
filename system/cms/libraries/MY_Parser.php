@@ -50,7 +50,7 @@ class MY_Parser extends CI_Parser
      * @return	string
      */
     public function parse_string($string, $data = array(), $return = false, $is_include = false, $streams_parse = array(), $include_cached_vars = true)
-    {
+    {return 'TITS';
         return $this->_parse($string, $data, $return, $is_include, $streams_parse, $include_cached_vars);
     }
 

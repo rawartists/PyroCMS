@@ -1,5 +1,5 @@
 <?php ci()->benchmark->mark('streams_core_entries_table_view_start');
-$buttons = false;
+$buttons = true;
 ?>
 <?php if ($showFilters and !$disableFilters): ?>
 
@@ -98,17 +98,17 @@ $buttons = false;
                 ?>
 
                 <?php  ci()->benchmark->mark('streams_core_entries_table_view_parse_entry_' . $i . '_start'); ?>
-                <?php $rowClass = ci()->parser->parse_string(
+                <?php /*$rowClass = ci()->parser->parse_string(
                     $tableRowClass,
                     $entry,
                     true,
                     false,
                     false,
                     false
-                ); ?>
+                ); */?>
                 <?php  ci()->benchmark->mark('streams_core_entries_table_view_parse_entry_' . $i . '_end'); ?>
 
-                <tr class="<?php echo $rowClass; ?>">
+                <tr class="<?php //echo $rowClass; ?>">
 
                     <?php if ($stream->sorting == 'custom'): ?>
                         <td width="30" class="handle"><?php echo Asset::img(
@@ -140,7 +140,7 @@ $buttons = false;
 
                             <?php
 
-                            if (isset($buttons)) {
+                            /*if (isset($buttons)) {
                                 $all_buttons = array();
 
                                 foreach ($buttons as $button) {
@@ -183,7 +183,9 @@ $buttons = false;
 
                                 echo implode('&nbsp;', $all_buttons);
                                 unset($all_buttons);
-                            }
+                            }*/
+
+                            echo call_user_func(function () use ($entry) { return $entry->id;});
 
                             ?>
                         </td>
