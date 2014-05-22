@@ -7,6 +7,7 @@ use Pyro\Module\Streams\Entry\EntryViewOptions;
 use Pyro\Module\Streams\Field\FieldCollection;
 use Pyro\Module\Streams\Field\FieldGroupCollection;
 
+
 class EntryUi extends UiAbstract
 {
     /**
@@ -25,6 +26,7 @@ class EntryUi extends UiAbstract
      */
     public function table($stream_slug, $stream_namespace = null)
     {
+
         $this->triggerMethod(__FUNCTION__);
 
         // If we are not passing the stream namespace we probably are passing an Entry model class
@@ -38,6 +40,8 @@ class EntryUi extends UiAbstract
         $this->format = 'string';
 
         return $this->model($model);
+
+
     }
 
     /**
@@ -141,6 +145,8 @@ class EntryUi extends UiAbstract
      */
     protected function triggerTable()
     {
+        ci()->benchmark->mark('entry_ui_trigger_table_start');
+
         $this->fireOnTable();
 
         if ($this->getTitle() === null) {
@@ -153,33 +159,44 @@ class EntryUi extends UiAbstract
             );
         }
 
+        ci()->benchmark->mark('entry_ui_trigger_table_view_options_start');
         $viewOptions = EntryViewOptions::make($this->model, $this->getFields('string'), $this->format);
+        ci()->benchmark->mark('entry_ui_trigger_table_view_options_end');
 
+        ci()->benchmark->mark('entry_ui_trigger_table_field_type_filter_events_start');
         $this
             ->assignments($this->model->getAssignments())
             ->stream($this->model->getStream())
             ->viewOptions($viewOptions->getFieldSlugs())
             ->fieldNames($viewOptions->getFieldNames())
             ->runFieldTypeFilterEvents();
+        ci()->benchmark->mark('entry_ui_trigger_table_field_type_filter_events_end');
 
+        ci()->benchmark->mark('entry_ui_trigger_table_build_pagination_start');
         // Build pagination if it's up to us
         if ($this->offset == null) {
             $this->pagination($this->limit, $this->paginationUri);
         }
+        ci()->benchmark->mark('entry_ui_trigger_table_build_pagination_end');
 
+
+        ci()->benchmark->mark('entry_ui_trigger_table_query_builder_start');
         // Allow to modify the query before we execute it
         // We pass the model to get access to its methods but you also can run query builder methods against it
         // Whatever you do on your closure, it must return an EntryBuilder instance
         if ($query = $this->fireOnQuery($this->model) and $query instanceof EntryQueryBuilder) {
             $this->query = $query;
         }
+        ci()->benchmark->mark('entry_ui_trigger_table_query_builder_end');
 
         /**
          * Auto eager load relations
          */
+        ci()->benchmark->mark('entry_ui_trigger_table_eager_loads_start');
         $viewOptions->addEagerLoads($this->eager);
 
         $this->query->with($viewOptions->getEagerLoads());
+        ci()->benchmark->mark('entry_ui_trigger_table_eager_loads_end');
 
         /**
          * Lets clone the query to a countQuery after doing ->onQuery()
@@ -187,7 +204,9 @@ class EntryUi extends UiAbstract
          * On the EntryQueryBuilder, ->filterQuery() will apply to both ->get() and ->count()
          * respectively, so that we have the relevant "wheres" applied
          */
+        ci()->benchmark->mark('entry_ui_trigger_table_clone_query_start');
         $this->countQuery = clone $this->query;
+        ci()->benchmark->mark('entry_ui_trigger_table_clone_query_end');
 
         /**
          * Order by or allow override here
@@ -199,9 +218,12 @@ class EntryUi extends UiAbstract
         /**
          * Get filters applied
          */
+        ci()->benchmark->mark('entry_ui_trigger_table_entry_query_filter_start');
         $this->filterClass = $filter = new EntryQueryFilter($this->query);
 
         $this->appliedFilters = $filter->getAppliedFilters();
+        ci()->benchmark->mark('entry_ui_trigger_table_entry_query_filter_end');
+
 
         // Override limit
         if ($limit = $filter->getLimit() and !$this->limit) {
@@ -210,6 +232,7 @@ class EntryUi extends UiAbstract
             $this->limit(\Settings::get('records_per_page'));
         }
 
+        ci()->benchmark->mark('entry_ui_trigger_table_limit_and_make_pagination_start');
         /**
          * Limit and make pagination
          */
@@ -217,12 +240,17 @@ class EntryUi extends UiAbstract
             $this->query->take($this->limit)->skip($this->offset);
             $this->paginationTotalRecords($this->countQuery->count());
         }
+        ci()->benchmark->mark('entry_ui_trigger_table_limit_and_make_pagination_end');
 
         /**
          * Get actual entries
          */
+        ci()->benchmark->mark('entry_ui_trigger_table_get_entries_start');
         $this->entries = $this->query->get($this->select)->getPresenter($viewOptions);
+        ci()->benchmark->mark('entry_ui_trigger_table_get_entries_end');
 
+
+        ci()->benchmark->mark('entry_ui_trigger_table_sorting_start');
         /**
          * Check for custom sorting
          *
@@ -245,10 +273,17 @@ class EntryUi extends UiAbstract
 
             ci()->template->append_js('streams/entry_sorting.js');
         }
+        ci()->benchmark->mark('entry_ui_trigger_table_sorting_end');
 
+        ci()->benchmark->mark('entry_ui_trigger_table_load_view_streams_core_entries_table_start');
         $this->content = ci()->load->view('streams_core/entries/table', $this->attributes, true);
+        ci()->benchmark->mark('entry_ui_trigger_table_load_view_streams_core_entries_table_end');
+
+        ci()->benchmark->mark('entry_ui_trigger_table_end');
 
         return $this;
+
+
     }
 
     /**

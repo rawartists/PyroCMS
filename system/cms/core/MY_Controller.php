@@ -46,7 +46,9 @@ class MY_Controller extends MX_Controller
      */
     public function __construct()
     {
+        ci()->benchmark->mark('my_controller_parent_construct_start');
         parent::__construct();
+        ci()->benchmark->mark('my_controller_parent_construct_end');
 
         $this->benchmark->mark('my_controller_start');
 
@@ -69,6 +71,8 @@ class MY_Controller extends MX_Controller
         // Set up the Illuminate\Database layer
         ci()->pdb = self::setupDatabase();
 
+        ci()->benchmark->mark('my_controller_psr_loader_start');
+
         // Lets PSR-0 up our modules
         $loader = new ClassLoader;
 
@@ -89,11 +93,17 @@ class MY_Controller extends MX_Controller
         // activate the autoloader
         $loader->register();
 
+        ci()->benchmark->mark('my_controller_psr_loader_end');
+
         // Add the site specific theme folder
         $this->template->add_theme_location(ADDONPATH . 'themes/');
 
+        ci()->benchmark->mark('my_controller_migration_start');
+
         // Migration logic helps to make sure PyroCMS is running the latest changes
         $this->load->library('migration');
+
+
 
         if (!($schema_version = $this->migration->current())) {
             show_error($this->migration->error_string());
@@ -103,11 +113,19 @@ class MY_Controller extends MX_Controller
             log_message('debug', 'PyroCMS was migrated to version: ' . $schema_version);
         }
 
+        ci()->benchmark->mark('my_controller_migration_end');
+
+        ci()->benchmark->mark('my_controller_library_settings_session_driver_start');
+
         // With that done, load settings
         $this->load->library('settings/settings');
 
         // And session stuff too
         $this->load->driver('session');
+
+        ci()->benchmark->mark('my_controller_library_settings_session_driver_start');
+
+        ci()->benchmark->mark('my_controller_language_start');
 
         // Lock front-end language
         if (!($this instanceof Admin_Controller and ($site_lang = AUTO_LANGUAGE))) {
@@ -130,8 +148,13 @@ class MY_Controller extends MX_Controller
         $pyro['lang']         = $langs[CURRENT_LANGUAGE];
         $pyro['lang']['code'] = CURRENT_LANGUAGE;
 
-        $this->load->vars($pyro);
+        ci()->benchmark->mark('my_controller_language_end');
 
+        ci()->benchmark->mark('my_controller_pyro_vars_start');
+        $this->load->vars($pyro);
+        ci()->benchmark->mark('my_controller_pyro_vars_end');
+
+        ci()->benchmark->mark('my_controller_php_locale_time_start');
         // Set php locale time
         if (isset($langs[CURRENT_LANGUAGE]['codes']) and sizeof(
                 $locale = (array)$langs[CURRENT_LANGUAGE]['codes']
@@ -141,7 +164,10 @@ class MY_Controller extends MX_Controller
             call_user_func_array('setlocale', $locale);
             unset($locale);
         }
+        ci()->benchmark->mark('my_controller_php_locale_time_end');
 
+
+        ci()->benchmark->mark('my_controller_reload_languages_start');
         // Reload languages
         if (AUTO_LANGUAGE !== CURRENT_LANGUAGE) {
             $this->config->set_item('language', $langs[CURRENT_LANGUAGE]['folder']);
@@ -151,12 +177,17 @@ class MY_Controller extends MX_Controller
         } else {
             $this->lang->load(array('global', 'users/user', 'files/files'));
         }
+        ci()->benchmark->mark('my_controller_reload_languages_end');
 
+
+        ci()->benchmark->mark('my_controller_module_accessible_start');
         // Work out module, controller and method and make them accessable throught the CI instance
         ci()->module     = $this->module = $this->router->fetch_module();
         ci()->controller = $this->controller = $this->router->fetch_class();
         ci()->method     = $this->method = $this->router->fetch_method();
+        ci()->benchmark->mark('my_controller_module_accessible_end');
 
+        ci()->benchmark->mark('my_controller_assign_user_start');
         // Is there a logged in user?
         ci()->sentry = $this->sentry = $this->setupSentry();
 
@@ -164,7 +195,9 @@ class MY_Controller extends MX_Controller
         $user = $this->sentry->getUser();
 
         $this->template->current_user = ci()->current_user = $this->current_user = $user;
+        ci()->benchmark->mark('my_controller_assign_user_end');
 
+        ci()->benchmark->mark('my_controller_managers_start');
         ci()->moduleManager = $this->moduleManager = new ModuleManager($user);
         ci()->themeManager  = $this->themeManager = new ThemeManager();
 
@@ -172,19 +205,30 @@ class MY_Controller extends MX_Controller
         $this->themeManager->setLocations($this->template->theme_locations());
 
         ci()->widgetManager = $this->widgetManager = new WidgetManager();
+        ci()->benchmark->mark('my_controller_managers_end');
 
+        ci()->benchmark->mark('my_controller_autoloader_start');
         // activate the autoloader
         $loader->register();
+        ci()->benchmark->mark('my_controller_autoloader_end');
 
+        ci()->benchmark->mark('my_controller_library_events_start');
         // now that we have a list of enabled modules
         $this->load->library('events');
+        ci()->benchmark->mark('my_controller_library_events_end');
 
+        ci()->benchmark->mark('my_controller_field_type_manager_start');
         FieldTypeManager::init();
         FieldTypeManager::registerAddonFieldTypes();
+        ci()->benchmark->mark('my_controller_field_type_manager_end');
 
         // load all modules (the Events library uses them all) and make their details widely available
+        ci()->benchmark->mark('my_controller_get_enabled_modules_start');
         $enabled_modules = $this->moduleManager->getAllEnabled();
+        ci()->benchmark->mark('my_controller_get_enabled_modules_end');
 
+
+        ci()->benchmark->mark('my_controller_loop_modules_start');
         foreach ($enabled_modules as $module) {
             FieldTypeManager::registerFolderFieldTypes($module['path'] . '/field_types/', $module['field_types']);
 
@@ -199,7 +243,9 @@ class MY_Controller extends MX_Controller
                 continue;
             }
         }
+        ci()->benchmark->mark('my_controller_loop_modules_end');
 
+        ci()->benchmark->mark('my_controller_specific_module_start');
         if ($this->module) {
             // If this a disabled module then show a 404
             if (empty($this->module_details['enabled'])) {
@@ -215,6 +261,7 @@ class MY_Controller extends MX_Controller
                 Asset::add_path('module', $this->module_details['path'] . '/');
             }
         }
+        ci()->benchmark->mark('my_controller_specific_module_end');
 
         $this->benchmark->mark('my_controller_end');
 

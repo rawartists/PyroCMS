@@ -1,11 +1,21 @@
+<?php ci()->benchmark->mark('streams_core_entries_table_view_start');
+$buttons = false;
+?>
 <?php if ($showFilters and !$disableFilters): ?>
+
+    <?php ci()->benchmark->mark('streams_core_entries_table_view_filters_start'); ?>
+
     <?php if (!empty($filters)): ?>
         <?php $this->load->view('streams_core/entries/filters'); ?>
     <?php endif; ?>
+
+    <?php ci()->benchmark->mark('streams_core_entries_table_view_filters_end'); ?>
+
 <?php endif; ?>
 
 <section class="table-responsive">
     <table class="<?php echo $tableClass; ?>">
+        <?php ci()->benchmark->mark('streams_core_entries_table_view_column_headers_start'); ?>
         <?php if ($showColumnHeaders): ?>
             <thead>
             <tr>
@@ -77,10 +87,17 @@
             </tr>
             </thead>
         <?php endif; ?>
+        <?php ci()->benchmark->mark('streams_core_entries_table_view_column_headers_end'); ?>
         <tbody>
-        <?php if ($entries->count() > 0): ?>
+        <?php if ($entries->count() > 0): $i = 0; ?>
             <?php foreach ($entries as $entry) { ?>
+                <?php
+                $i++;
+                ci()->benchmark->mark('streams_core_entries_table_view_entry_' . $i . '_start');
 
+                ?>
+
+                <?php  ci()->benchmark->mark('streams_core_entries_table_view_parse_entry_' . $i . '_start'); ?>
                 <?php $rowClass = ci()->parser->parse_string(
                     $tableRowClass,
                     $entry,
@@ -89,6 +106,7 @@
                     false,
                     false
                 ); ?>
+                <?php  ci()->benchmark->mark('streams_core_entries_table_view_parse_entry_' . $i . '_end'); ?>
 
                 <tr class="<?php echo $rowClass; ?>">
 
@@ -100,18 +118,24 @@
                     <?php endif; ?>
 
                     <?php if (!empty($viewOptions)): ?>
-                        <?php foreach ($viewOptions as $viewOption): ?>
+                        <?php foreach ($viewOptions as &$viewOption): ?>
                             <?php $class = isset($fields[$viewOption]['class']) ? $fields[$viewOption]['class'] : null; ?>
                             <td class="<?php echo $class; ?>">
 
                                 <input type="hidden" name="action_to[]" value="<?php echo $entry->getKey(); ?>"/>
-
+                                <?php ci()->benchmark->mark(
+                                    'streams_core_entries_table_view_last_viewOption_' . $viewOption . '_start'
+                                ); ?>
                                 <?php echo $entry->{$viewOption}; ?>
+                                <?php ci()->benchmark->mark(
+                                    'streams_core_entries_table_view_last_viewOption_' . $viewOption . '_end'
+                                ); ?>
 
                             </td>
                         <?php endforeach; ?>
                     <?php endif; ?>
                     <?php if ($buttons): ?>
+                        <?php ci()->benchmark->mark('streams_core_entries_table_view_buttons_start'); ?>
                         <td class="text-right">
 
                             <?php
@@ -163,8 +187,10 @@
 
                             ?>
                         </td>
+                        <?php ci()->benchmark->mark('streams_core_entries_table_view_buttons_end'); ?>
                     <?php endif; ?>
                 </tr>
+                <?php ci()->benchmark->mark('streams_core_entries_table_view_entry_' . $i . '_end'); ?>
             <?php } ?>
         <?php else: ?>
             <tr>
@@ -189,6 +215,7 @@
 </section>
 
 <?php if ($showFooter): ?>
+    <?php ci()->benchmark->mark('streams_core_entries_table_view_footer_start'); ?>
     <div class="panel-footer">
 
         <?php if (isset($pagination) and $pagination): ?>
@@ -218,4 +245,7 @@
             </small>
         </div>
     <?php endif; ?>
+    <?php ci()->benchmark->mark('streams_core_entries_table_view_footer_end'); ?>
 <?php endif; ?>
+<?php ci()->benchmark->mark('streams_core_entries_table_view_end');
+?>

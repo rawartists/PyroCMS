@@ -25,26 +25,40 @@ class Admin_Controller extends MY_Controller
 	 */
 	public function __construct()
 	{
+
+        ci()->benchmark->mark('admin_controller_start');
+
+
+        ci()->benchmark->mark('admin_controller_construct_my_controller_start');
 		parent::__construct();
+        ci()->benchmark->mark('admin_controller_construct_my_controller_end');
 
 		// Load the Language files ready for output
 		$this->lang->load('admin');
 		$this->lang->load('buttons');
-		
+
+        ci()->benchmark->mark('admin_controller_check_access_start');
+
 		// Show error and exit if the user does not have sufficient permissions
 		if ( ! self::checkAccess()) {
 			$this->session->set_flashdata('error', lang('cp:access_denied'));
 			redirect();
 		}
 
+        ci()->benchmark->mark('admin_controller_check_access_end');
+
 		// If the setting is enabled redirect request to HTTPS
 		if (Settings::get('admin_force_https') and strtolower(substr(current_url(), 4, 1)) != 's') {
 			redirect(str_replace('http:', 'https:', current_url()).'?session='.session_id());
 		}
 
+        ci()->benchmark->mark('admin_controller_admin_theme_start');
 		$this->load->helper('admin_theme');
-		
+        ci()->benchmark->mark('admin_controller_admin_theme_end');
+
+        ci()->benchmark->mark('admin_controller_admin_theme_manager_start');
 		$theme = $this->themeManager->locate(Settings::get('admin_theme'));
+        ci()->benchmark->mark('admin_controller_admin_theme_manager_end');
 
 		// Using a bad slug? Weak
 		if (is_null($theme)) {
@@ -59,13 +73,18 @@ class Admin_Controller extends MY_Controller
 		// Set the location of assets
 		Asset::add_path('theme', $this->theme->web_path.'/');
 		Asset::set_path('theme');
-		
+
+        ci()->benchmark->mark('admin_controller_register_widget_controllers_start');
 		$this->registerWidgetLocations();
+        ci()->benchmark->mark('admin_controller_register_widget_controllers_end');
 
 		// Active Admin Section (might be null, but who cares)
 		$this->template->active_section = $this->section;
-		
+
+
+        ci()->benchmark->mark('admin_controller_trigger_events_start');
 		Events::trigger('admin_controller');
+        ci()->benchmark->mark('admin_controller_trigger_events_end');
 
 		// -------------------------------------
 		// Build Admin Navigation
@@ -74,6 +93,8 @@ class Admin_Controller extends MY_Controller
 		// from the DB and run their module items.
 		// -------------------------------------
 
+
+        ci()->benchmark->mark('admin_controller_building_navigation_start');
 		if (is_logged_in())
 		{
 			// Here's our menu array.
@@ -184,20 +205,28 @@ class Admin_Controller extends MY_Controller
 
 			// And there we go! These are the admin menu items.
 			$this->template->menu_items = $ordered_menu;
+
+            ci()->benchmark->mark('admin_controller_building_navigation_end');
 		}
 
 		// ------------------------------
-		
+
+        ci()->benchmark->mark('admin_controller_template_config_start');
 		// Template configuration
 		$this->template
 			->enable_parser(false)
 			->set('theme_options', (object) $this->theme->model->getOptionValues())
 			->set_theme(ADMIN_THEME)
 			->set_layout('default', 'admin');
+        ci()->benchmark->mark('admin_controller_template_config_end');
 
+        ci()->benchmark->mark('admin_controller_run_method_start');
 		// trigger the run() method in the selected admin theme
 		$class = 'Theme_'.ucfirst($this->theme->model->slug);
 		call_user_func(array(new $class, 'run'));
+        ci()->benchmark->mark('admin_controller_run_method_end');
+
+        ci()->benchmark->mark('admin_controller_end');
 	}
 
 	/**
