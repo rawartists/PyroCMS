@@ -4,6 +4,8 @@
 .settings
 .idea
 build/
+.htaccess
+.htpasswd
 
 assets/cache/*
 assets/page_types/*
