@@ -108,7 +108,11 @@ class Multiple extends FieldTypeAbstract
             $attributes = 'class="' . $this->form_slug . '-selectize skip"';
         }
 
+        //return 'hi';
+
         return form_multiselect($this->form_slug.'[]', $options, $this->value, $attributes);
+
+
     }
 
     /**
@@ -157,7 +161,6 @@ class Multiple extends FieldTypeAbstract
     public function filterInput()
     {
         $options = array(null => lang_label($this->getPlaceholder())) + $this->getOptions();
-
         return form_dropdown($this->getFilterSlug('is'), $options, $this->getFilterValue('is'));
     }
 
