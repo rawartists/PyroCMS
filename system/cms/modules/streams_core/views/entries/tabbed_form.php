@@ -1,88 +1,98 @@
 <?php if (!$formOverride): ?>
-<?php echo form_open_multipart($formUrl, 'class="streams_form"'); ?>
+    <?php echo form_open_multipart($formUrl, 'class="streams_form"'); ?>
 <?php endif; ?>
 
-	
-	<!-- .nav.nav-tabs -->
-	<ul class="nav nav-tabs">
-	<?php foreach($tabs as $tab): ?>
 
-		<li class="<?php echo array_search($tab, $tabs) == 0 ? 'active' : null; ?>">
-		
-			<a href="#<?php echo $tab['id']; ?>" data-toggle="tab" title="<?php echo $tab['title']; ?>">
-				<span><?php echo $tab['title']; ?></span>
-			</a>
+<!-- .nav.nav-tabs -->
+<ul class="nav nav-tabs">
+    <?php foreach ($tabs as $tab): ?>
 
-		</li>
+        <li class="<?php echo array_search($tab, $tabs) == 0 ? 'active' : null; ?>">
 
-	<?php endforeach; ?>
-	</ul>
-	<!-- /.nav.nav-tabs -->
+            <a href="#<?php echo $tab['id']; ?>" data-toggle="tab" title="<?php echo $tab['title']; ?>">
+                <span><?php echo $tab['title']; ?></span>
+            </a>
 
+        </li>
 
-	<!-- .tab-content.panel-body -->
-	<section class="tab-content panel-body">
-
-		<?php foreach($tabs as $tab): ?>
-
-			<div class="tab-pane <?php echo array_search($tab, $tabs) == 0 ? 'active' : null; ?>" id="<?php echo $tab['id']; ?>">
-				
-				<?php if ( ! empty($tab['content']) and is_string($tab['content'])): ?>
-
-					<?php echo $tab['content']; ?>
-
-				<?php else: ?>
-
-					<?php foreach ($tab['fields'] as $slug): ?>
-
-						<?php if ($field = $fields->findBySlug($slug)): ?>
-						<div class="form-group <?php echo in_array($field->field_slug, $hidden) ? 'hidden' : null; ?>">
-						<div class="row">
-							
-							<?php echo $field->input_row; ?>
-
-						</div>
-						</div>
-						<?php endif; ?>
-
-					<?php endforeach; ?>
-					
-				<?php endif; ?>
-
-			</div>
-
-		<?php endforeach; ?>
-
-	</section>
-	<!-- /.tab-content.panel-body -->
+    <?php endforeach; ?>
+</ul>
+<!-- /.nav.nav-tabs -->
 
 
-	<?php if ($mode == 'edit'): ?>
-		<input type="hidden" value="<?php echo $entry->id;?>" name="row_edit_id" />
-	<?php endif; ?>
+<!-- .tab-content.panel-body -->
+<section class="tab-content panel-body">
+
+    <?php foreach ($tabs as $tab): ?>
+
+        <div class="tab-pane <?php echo array_search($tab, $tabs) == 0 ? 'active' : null; ?>"
+             id="<?php echo $tab['id']; ?>">
+
+            <?php if (!empty($tab['content']) and is_string($tab['content'])): ?>
+
+                <?php echo $tab['content']; ?>
+
+            <?php else: ?>
+
+                <?php foreach ($tab['fields'] as $slug): ?>
+
+                    <?php if ($field = $fields->findBySlug($slug)): ?>
+                        <div class="form-group <?php echo in_array($field->field_slug, $hidden) ? 'hidden' : null; ?>">
+                            <div class="row">
+
+                                <?php echo $field->input_row; ?>
+
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                <?php endforeach; ?>
+
+            <?php endif; ?>
+
+        </div>
+
+    <?php endforeach; ?>
+
+</section>
+<!-- /.tab-content.panel-body -->
 
 
-	<?php if (!$formOverride): ?>
-	<div class="panel-footer">
-		<button type="submit" name="btnAction" value="save" class="btn btn-success"><?php echo lang('buttons:save'); ?></button>
-		
-		<?php if (! empty($exitRedirect)): ?>
-		<button type="submit" name="btnAction" value="exit" class="btn btn-info"><?php echo lang('buttons:save_exit'); ?></button>
-		<?php endif; ?>
+<?php if ($mode == 'edit'): ?>
+    <input type="hidden" value="<?php echo $entry->id; ?>" name="row_edit_id"/>
+<?php endif; ?>
 
-		<?php if (! empty($createRedirect)): ?>
-		<button type="submit" name="btnAction" value="create" class="btn btn-info"><?php echo lang('buttons:save_create'); ?></button>
-		<?php endif; ?>
 
-		<?php if (! empty($continueRedirect)): ?>
-		<button type="submit" name="btnAction" value="continue" class="btn btn-info"><?php echo lang('buttons:save_continue'); ?></button>
-		<?php endif; ?>
+<?php if (!$disableFormOpen): ?>
+    <div class="panel-footer">
+        <button type="submit" name="btnAction" value="save" class="btn btn-success"><?php echo lang(
+                'buttons:save'
+            ); ?></button>
 
-		<a href="<?php echo site_url(isset($uriCancel) ? $uriCancel : $redirectSave); ?>" class="btn btn-default"><?php echo lang('buttons:cancel'); ?></a>
-	</div>
-	<?php endif; ?>
+        <?php if (!empty($redirectExit)): ?>
+            <button type="submit" name="btnAction" value="exit" class="btn btn-info"><?php echo lang(
+                    'buttons:save_exit'
+                ); ?></button>
+        <?php endif; ?>
+
+        <?php if (!empty($redirectCreate)): ?>
+            <button type="submit" name="btnAction" value="create" class="btn btn-info"><?php echo lang(
+                    'buttons:save_create'
+                ); ?></button>
+        <?php endif; ?>
+
+        <?php if (!empty($redirectContinue)): ?>
+            <button type="submit" name="btnAction" value="continue" class="btn btn-info"><?php echo lang(
+                    'buttons:save_continue'
+                ); ?></button>
+        <?php endif; ?>
+
+        <a href="<?php echo site_url(isset($uriCancel) ? $uriCancel : $redirectSave); ?>"
+           class="btn btn-default"><?php echo lang('buttons:cancel'); ?></a>
+    </div>
+<?php endif; ?>
 
 
 <?php if (!$formOverride): ?>
-<?php echo form_close(); ?>
+    <?php echo form_close(); ?>
 <?php endif; ?>
