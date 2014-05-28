@@ -2,6 +2,12 @@
 # Set this to development, staging or production
 # SetEnv PYRO_ENV production
 
+AuthName "Restricted Area" 
+AuthType Basic 
+AuthUserFile /home/www/raw/.htpasswd 
+AuthGroupFile /dev/null 
+require valid-user
+
 <IfModule mod_rewrite.c>
 
     # Make sure directory listing is disabled

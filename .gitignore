@@ -13,6 +13,7 @@ assets/page_types/default/*
 !assets/page_types/default/.htaccess
 system/cms/cache/*
 system/cms/config/database.php
+system/cms/config/cache.php
 system/cms/logs/log-*.php
 system/vendor/*
 nbproject/
