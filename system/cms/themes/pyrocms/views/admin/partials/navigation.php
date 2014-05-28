@@ -32,8 +32,8 @@
 			<?php if (isset($menu_item['items']) and is_array($menu_item['items'])): ?>
 
 				<li class="dropdown-submenu <?php echo in_array(uri_string(), $menu_item['items']) ? 'has-active' : null; ?>">
-					
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+
+					<a href="<?php echo reset($menu_item['items']); ?>" class="dropdown-toggle">
 						<?php echo isset($menu_item['before']) ? $menu_item['before'] : null; ?>
 						<span>
 							<?php echo lang_label($menu_item['title']); ?>
@@ -91,7 +91,6 @@
 			<?php endif; ?>
 
 		<?php endforeach; ?>
-
 
 
 		<!--
