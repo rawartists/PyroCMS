@@ -202,11 +202,16 @@ class EntryQueryFilter
      */
     protected function applyFilters()
     {
+
+        $uri = md5(ci()->uri->uri_string());
+
         if (isset(ci()->module_details['slug'])) {
             $prefix = ci()->module_details['slug'] . '_';
         } else {
             $prefix = null;
         }
+
+        $prefix = $uri."-".$prefix;
 
         ci()->session->set_userdata($prefix . $this->getFilterKey(), $this->getPostData());
     }
@@ -216,11 +221,16 @@ class EntryQueryFilter
      */
     protected function clearFilters()
     {
+
+        $uri = md5(ci()->uri->uri_string());
+
         if (isset(ci()->module_details['slug'])) {
             $prefix = ci()->module_details['slug'] . '_';
         } else {
             $prefix = null;
         }
+
+        $prefix = $uri."-".$prefix;
         
         ci()->session->unset_userdata($prefix . $this->getFilterKey());
     }
@@ -232,11 +242,15 @@ class EntryQueryFilter
      */
     public function getAppliedFilters()
     {
+        $uri = md5(ci()->uri->uri_string());
+
         if (isset(ci()->module_details['slug'])) {
             $prefix = ci()->module_details['slug'] . '_';
         } else {
             $prefix = null;
         }
+
+        $prefix = $uri."-".$prefix;
 
         if (isset(ci()->session)) {
             return ci()->session->userdata($prefix . $this->getFilterKey());
