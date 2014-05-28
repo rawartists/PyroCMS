@@ -92,10 +92,7 @@
 <?php if ($entries->count() > 0): $i = 0; ?>
     <?php foreach ($entries as $entry) {
 
-
-        $row_html = '';
-
-        $entry_key = md5($entry);
+        $entry_key = md5($entry.uri_string());
 
         if (ci()->cache->isEnabled()) {
             if ($cached_entry = ci()->cache->get($entry_key)) {
