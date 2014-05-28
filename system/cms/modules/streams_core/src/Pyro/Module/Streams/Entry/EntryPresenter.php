@@ -72,7 +72,7 @@ class EntryPresenter extends Presenter
 
         } elseif ($viewOption and $template = $viewOption->getTemplate()) {
 
-            return 'Tits';/*ci()->parser->parse_string(
+            return ci()->parser->parse_string(
                 $template,
                 array('entry' => $resourceArray ? : $this->getResourceArray()),
                 true,
@@ -82,7 +82,7 @@ class EntryPresenter extends Presenter
                     'namespace' => $this->resource->getStreamNamespace()
                 ),
                 false
-            );*/
+            );
 
         } elseif (method_exists($this, $method)) {
 
@@ -124,7 +124,7 @@ class EntryPresenter extends Presenter
      */
     protected function getUserOutput($value)
     {
-        return 'Tits';//ci()->parser->parse_string('<a href="admin/users/edit/{{ id }}">{{ username }}</a>', $value, true);
+        return ci()->parser->parse_string('<a href="admin/users/edit/{{ id }}">{{ username }}</a>', $value, true);
     }
 
     /**
