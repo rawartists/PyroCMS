@@ -6,6 +6,7 @@
 build/
 .htaccess
 .htpasswd
+opcache.php
 
 assets/cache/*
 assets/page_types/*
