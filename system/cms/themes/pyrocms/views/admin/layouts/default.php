@@ -86,6 +86,7 @@
 
 				<!-- Body Content -->
 				<section class="scrollable" id="body">
+                    <?php file_partial('notices'); ?>
 					
 					<?php echo $template['body']; ?>
 

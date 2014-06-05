@@ -482,6 +482,18 @@ abstract class FieldTypeAbstract
     }
 
     /**
+     * Output form output
+     *
+     * @param    array
+     * @param    array
+     * @return    string
+     */
+    public function formOutput()
+    {
+        return $this->value;
+    }
+
+    /**
      * Get filter output for a field type for plugin usage
      *
      * @return string
@@ -605,6 +617,14 @@ abstract class FieldTypeAbstract
         );
     }
 
+    public function formOutputRow()
+    {
+        return $this->view(
+            $this->getParameter('form_output_row', 'module::streams_core/fields/form_output_row'),
+            array('field_type' => $this)
+        );
+    }
+
     /**
      * Load a view from a field type
      *
@@ -677,6 +697,11 @@ abstract class FieldTypeAbstract
         return defined('ADMIN_THEME') ? $this->formInput() : $this->publicFormInput();
     }
 
+    public function getOutput()
+    {
+        return defined('ADMIN_THEME') ? $this->formOutput() : $this->publicFormOutput();
+    }
+
     /**
      * Output public form input
      *
@@ -687,6 +712,18 @@ abstract class FieldTypeAbstract
     public function publicFormInput()
     {
         return $this->formInput();
+    }
+
+    /**
+     * Output public form output
+     *
+     * @param    array
+     * @param    array
+     * @return    string
+     */
+    public function publicFormOutput()
+    {
+        return $this->formOutput();
     }
 
     /**
@@ -1041,6 +1078,8 @@ abstract class FieldTypeAbstract
             '.field.' . $this->field->field_slug .
             '.' . ($type ? $type . '_' : null) . 'placeholder'
         ) ?: $default;
+
+
     }
 
     /**
