@@ -82,7 +82,12 @@
 
         <?php endforeach; ?>
         <?php if ($buttons): ?>
-            <th></th>
+
+            <?php
+            $buttonsClass = (isset($buttonsClass)) ? $buttonsClass : '';
+            ?>
+
+            <th class="<?php echo $buttonsClass; ?>"></th>
         <?php endif; ?>
     </tr>
     </thead>
@@ -169,6 +174,8 @@
         if ($buttons):
             ci()->benchmark->mark('streams_core_entries_table_view_buttons_start');
 
+
+
             $row_html .= '<td class="text-right">';
 
             if (isset($buttons)) {
@@ -182,7 +189,7 @@
                             $button['html'],
                             $entry,
                             true,
-                            false
+                            true
                         );
                         continue;
                     }
@@ -192,7 +199,7 @@
                         $button['url'],
                         $entry,
                         true,
-                        false
+                        true
                     );
                     $url = str_replace('-entry_id-', $entry->getKey(), $url);
 
