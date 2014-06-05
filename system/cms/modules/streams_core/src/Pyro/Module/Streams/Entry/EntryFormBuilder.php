@@ -131,7 +131,7 @@ class EntryFormBuilder extends UiAbstract
         /**
          * Get validation
          */
-        $this->validator->setModel($this->entry, $this->skips);
+        $this->validator->setModel($this->entry, $this->skips + $this->readonly);
 
         // -------------------------------------
         // Validation
@@ -156,7 +156,7 @@ class EntryFormBuilder extends UiAbstract
             if ($validate) {
                 if (!$this->entry->getKey()) { // new
                     // ci()->row_m->insert_entry($_POST, $stream_fields, $stream, $skips);
-                    if (!$this->entry->preSave($this->skips)) {
+                    if (!$this->entry->preSave($this->skips + $this->readonly)) {
                         ci()->session->set_flashdata('notice', lang_label($this->messageError));
                     } else {
                         $this->result = $this->entry;
@@ -176,7 +176,7 @@ class EntryFormBuilder extends UiAbstract
                         ci()->session->set_flashdata('success', lang_label($this->messageSuccess));
                     }
                 } else { // edit
-                    if (!$this->entry->preSave($this->skips) and $this->messageError) {
+                    if (!$this->entry->preSave($this->skips + $this->readonly) and $this->messageError) {
                         ci()->session->set_flashdata('notice', lang_label($this->messageError));
                     } else {
                         $this->result = $this->entry;
@@ -272,9 +272,19 @@ class EntryFormBuilder extends UiAbstract
                 $field->field_slug = $field->field_slug;
                 $field->is_hidden  = (bool)in_array($field->field_slug, $this->get('hidden', array()));
 
-                // Get the form input flavors
-                $field->form_input = $type->getInput();
-                $field->input_row  = $type->formInputRow();
+
+                // Input or readonly
+                if(in_array($field->field_slug, $this->getReadonly())) {
+
+                    $field->form_input = $type->getOutput();
+                    $field->input_row  = $type->formOutputRow();
+
+                } else {
+
+                    $field->form_input = $type->getInput();
+                    $field->input_row  = $type->formInputRow();
+
+                }
 
                 // Set even/odd
                 $field->odd_even = (($k + 1) % 2 == 0) ? 'even' : 'odd';
@@ -308,7 +318,8 @@ class EntryFormBuilder extends UiAbstract
                 continue;
             }
 
-            if (!in_array($field->field_slug, $this->getSkips(array()))) {
+            if (!in_array($field->field_slug, $this->getSkips(array())) &&
+                !in_array($field->field_slug, $this->getReadonly(array())) ) {
 
                 // If we haven't called it (for dupes),
                 // then call it already.
@@ -530,7 +541,8 @@ class EntryFormBuilder extends UiAbstract
         // Loop through and set the rules
         // -------------------------------------
         foreach ($this->assignments as $assignment) {
-            if (!in_array($assignment->field->field_slug, $this->getSkips(array()))) {
+            if (!in_array($assignment->field->field_slug, $this->getSkips(array())) &&
+                !in_array($assignment->field->field_slug, $this->getReadonly(array()))) {
 
                 $rules = array();
 
@@ -640,7 +652,7 @@ class EntryFormBuilder extends UiAbstract
                 continue;
             }
 
-            if (!in_array($field->field_slug, $this->skips)) {
+            if (!in_array($field->field_slug, $this->skips + $this->readonly)) {
                 // If we haven't called it (for dupes),
                 // then call it already.
                 if (!in_array($field->field_type, $this->fieldTypePublicEventsRun)) {
