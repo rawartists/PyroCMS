@@ -105,7 +105,15 @@ class Image extends FieldTypeAbstract
 
 			$path = ci()->parser->parse_string($file->path, $folder, true, false, null, false);
 
-			$out .= '<span class="image_remove">X</span><a class="image_link" href="'.$path.'" target="_break"><img src="'.$path.'" /></a><br />';
+
+            $out .= '<div class="row">';
+            $out .= '<div class="col-lg-12">';
+            $out .= '<span class="image_remove">X</span>';
+            $out .= '<a class="image_link" href="'.$path.'" target="_break">';
+            $out .= '<img src="'.$path.'" class="img-responsive"/></a>';
+            $out .= '</div>';
+            $out .= '</div>';
+            $out .= '<br />';
 			$out .= form_hidden($this->form_slug.'_id', $this->value);
 		
 		} else {
