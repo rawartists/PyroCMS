@@ -109,7 +109,7 @@ class Image extends FieldTypeAbstract
             $out .= '<div class="row">';
             $out .= '<div class="col-lg-12">';
             $out .= '<span class="image_remove">X</span>';
-            $out .= '<a class="image_link" href="'.$path.'" target="_break">';
+            $out .= '<a class="image_link" href="'.$path.'" target="_blank">';
             $out .= '<img src="'.$path.'" class="img-responsive"/></a>';
             $out .= '</div>';
             $out .= '</div>';
