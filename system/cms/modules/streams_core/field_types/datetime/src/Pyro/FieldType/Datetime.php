@@ -167,20 +167,20 @@ class Datetime extends FieldTypeAbstract
             $date = ci()->input->post($this->form_slug);
 
             // So we have a post value - grab it
-            if (!isset($this->value) or $this->value == null or $this->value == $this->zeroDatetime or $this->value == $this->zeroTime) {
+            if (!($this->value) or $this->value == null or $this->value == $this->zeroDatetime or $this->value == $this->zeroTime) {
 
             } else {
 
                 // Yep - are we using time?
                 if ($this->getParameter('use_time', 'no') == 'no') {
-                    return Carbon::createFromFormat($this->datepickerFormatPhp, $date)->hour(0)->minute(0)->second(
+                    $datetime = Carbon::createFromFormat($this->datepickerFormatPhp, $date)->hour(0)->minute(0)->second(
                         0
-                    )->format($this->storageFormat);
+                    );
                 } elseif ($this->getParameter('use_time') == 'yes' and $time !== null) {
-                    return Carbon::createFromFormat(
+                    $datetime = Carbon::createFromFormat(
                         $this->datepickerFormatPhp . ' ' . $this->timepickerFormat,
                         $date . ' ' . $time
-                    )->second(0)->format($this->storageFormat);
+                    );
                 }
             }
         } else {
@@ -204,6 +204,7 @@ class Datetime extends FieldTypeAbstract
         // of drop down menus.
         // ------------------------------------	
         if ($input_type == 'datepicker') {
+
             // Caps
             $start_datetime = Carbon::parse($this->getParameter('start_date', '-5 years'));
             $end_datetime   = Carbon::parse($this->getParameter('end_date', '+5 years'));
