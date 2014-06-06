@@ -385,7 +385,7 @@ class Files
                         $data['path'] = '{{ url:site }}files/download/'.$file_id;
                     File::where('id',$replace_file->id)->update($data);
                 } else {
-                    $data['id'] = substr(md5(microtime()+$data['filename']), 0, 15);
+                    $data['id'] = md5(microtime()+$data['filename']);
                     $file_id = $data['id'];
                     if($data['type'] !== 'i') // so it wasn't an image. Now that we know the id we need to set the path as a download
                         $data['path'] = '{{ url:site }}files/download/'.$file_id;
