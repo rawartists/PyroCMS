@@ -100,6 +100,10 @@ $lang['global:empty']       = 'Empty';
 $lang['global:delete']      = 'Delete';
 $lang['global:remove']      = 'Remove';
 $lang['global:back']        = 'Back';
+$lang['global:start']       = 'Start';
+$lang['global:starting']    = 'Starting';
+$lang['global:end']         = 'End';
+$lang['global:ending']      = 'Ending';
 
 $lang['global:keywords'] = 'Keywords';
 
