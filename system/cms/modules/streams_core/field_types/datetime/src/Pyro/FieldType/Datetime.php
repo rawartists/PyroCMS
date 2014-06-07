@@ -85,6 +85,13 @@ class Datetime extends FieldTypeAbstract
     protected $zeroTime = '00:00:00';
 
     /**
+     * Blank time
+     *
+     * @var string
+     */
+    protected $blankTime = '12:00 AM';
+
+    /**
      * Default display datetime format
      *
      * @var string
@@ -176,11 +183,16 @@ class Datetime extends FieldTypeAbstract
                     $datetime = Carbon::createFromFormat($this->datepickerFormatPhp, $date)->hour(0)->minute(0)->second(
                         0
                     );
+
                 } elseif ($this->getParameter('use_time') == 'yes' and $time !== null) {
+
+                    $time = ($time > '') ? $time : $this->blankTime;
+
                     $datetime = Carbon::createFromFormat(
                         $this->datepickerFormatPhp . ' ' . $this->timepickerFormat,
                         $date . ' ' . $time
                     );
+
                 }
             }
         } else {
@@ -222,10 +234,10 @@ class Datetime extends FieldTypeAbstract
                 'placeholder'      => $this->datepickerFormat,
             );
 
-
             $date_input .= '<div class="col-lg-3 input-group n-p-l"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>' . form_input(
                     $options
                 ) . '</div>';
+
 
         } else {
 
@@ -329,6 +341,7 @@ class Datetime extends FieldTypeAbstract
      */
     public function preSave()
     {
+
         // Make some safety catches
         $time = ci()->input->post($this->form_slug . '_time');
         $date = ci()->input->post($this->form_slug);
@@ -346,13 +359,13 @@ class Datetime extends FieldTypeAbstract
                 // Are we using time?
                 if ($this->getParameter('use_time') == 'yes') {
 
-                    // Do we have everything?
-                    if ($time and $time !== $this->zeroTime) {
-                        return Carbon::createFromFormat(
-                            $this->datepickerFormatPhp . ' ' . $this->timepickerFormat,
-                            $date . ' ' . $time
-                        )->second(0)->format($this->storageFormat);
-                    }
+                    $time = ($time > '') ? $time : $this->blankTime;
+
+                    return Carbon::createFromFormat(
+                        $this->datepickerFormatPhp . ' ' . $this->timepickerFormat,
+                        $date . ' ' . $time
+                    )->second(0)->format($this->storageFormat);
+
                 } else {
                     return Carbon::createFromFormat($this->datepickerFormatPhp, $date)->hour(0)->minute(0)->second(
                         0
