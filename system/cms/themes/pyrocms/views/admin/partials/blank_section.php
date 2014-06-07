@@ -1,5 +1,3 @@
-<?php file_partial('notices'); ?>
-
 <div class="p">
 
 
