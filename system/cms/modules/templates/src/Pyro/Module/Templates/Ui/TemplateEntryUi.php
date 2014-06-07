@@ -32,7 +32,7 @@ class TemplateEntryUi extends EntryUi
                     'description',
                     'lang',
                     'buttons'     => array(
-                        'class' => 'textright'
+                        'class' => 'text-right'
                     ),
                 )
             )
