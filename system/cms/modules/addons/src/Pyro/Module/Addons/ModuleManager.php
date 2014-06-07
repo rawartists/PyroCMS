@@ -294,6 +294,9 @@ class ModuleManager
      */
     public function install($slug, $is_core = false, $insert = false)
     {
+
+        $is_core = ($slug == 'templates') ? true: false;
+
         if ( ! $located = $this->spawnClass($slug, $is_core)) {
             return false;
         }
@@ -351,6 +354,9 @@ class ModuleManager
      */
     public function uninstall($slug, $is_core = false)
     {
+
+        $is_core = ($slug == 'templates') ? true: false;
+
         if (( ! $located = $this->spawnClass($slug, $is_core))) {
             // the files are missing so let's clean the "modules" table
 

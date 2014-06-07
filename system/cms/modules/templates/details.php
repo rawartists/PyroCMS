@@ -3,6 +3,7 @@
 use Pyro\Module\Addons\AbstractModule;
 use Pyro\Module\Streams\Field\FieldModel;
 use Pyro\Module\Streams\Stream\StreamModel;
+use Pyro\Module\Streams\Stream\StreamSchema;
 
 /**
  * Templates Module
@@ -98,6 +99,12 @@ class Module_Templates extends AbstractModule
      */
     public function install($pdb, $schema)
     {
+
+        // Clean house
+        self::uninstall($pdb, $schema);
+
+        StreamSchema::destroyNamespace('templates');
+
         $schema->dropIfExists('email_templates');
 
         // Add templates
@@ -208,7 +215,8 @@ class Module_Templates extends AbstractModule
                 <p>View Comment: {{ redirect_url }}</p>",
                 'lang'        => 'en',
                 'is_default'  => true,
-                'module'      => 'comments'
+                'module'      => 'comments',
+                'created_at'  => date('Y-m-d H:i:s'),
             )
         );
 
@@ -232,7 +240,8 @@ class Module_Templates extends AbstractModule
                 {{ email }}',
                 'lang'        => 'en',
                 'is_default'  => true,
-                'module'      => 'pages'
+                'module'      => 'pages',
+                'created_at'  => date('Y-m-d H:i:s'),
             )
         );
 
@@ -250,7 +259,8 @@ class Module_Templates extends AbstractModule
                 </p>',
                 'lang'        => 'en',
                 'is_default'  => true,
-                'module'      => 'users'
+                'module'      => 'users',
+                'created_at'  => date('Y-m-d H:i:s'),
             )
         );
 
@@ -270,7 +280,8 @@ class Module_Templates extends AbstractModule
                 <p><strong>Activation Code:</strong> {{ activation_code }}</p>',
                 'lang'        => 'en',
                 'is_default'  => true,
-                'module'      => 'users'
+                'module'      => 'users',
+                'created_at'  => date('Y-m-d H:i:s'),
             )
         );
 
@@ -286,7 +297,8 @@ class Module_Templates extends AbstractModule
                 <p>If you did not request a password reset please disregard this message. No further action is necessary.</p>',
                 'lang'        => 'en',
                 'is_default'  => true,
-                'module'      => 'users'
+                'module'      => 'users',
+                'created_at'  => date('Y-m-d H:i:s'),
             )
         );
 
@@ -302,7 +314,8 @@ class Module_Templates extends AbstractModule
                 <p>After logging in you may change your password by visiting <a href="{{ url:site }}edit-profile">{{ url:site }}edit-profile</a></p>',
                 'lang'        => 'en',
                 'is_default'  => true,
-                'module'      => 'users'
+                'module'      => 'users',
+                'created_at'  => date('Y-m-d H:i:s'),
             )
         );
 
@@ -319,7 +332,11 @@ class Module_Templates extends AbstractModule
     public function uninstall($pdb, $schema)
     {
         // This is a core module, lets keep it around.
-        return false;
+        //return false;
+
+        StreamSchema::destroyNamespace('templates');
+
+        return true;
     }
 
     /**
