@@ -8,6 +8,7 @@
 			<h3 class="panel-title">
 				<?php if(isset($template['page_title'])) { echo lang_label($template['page_title']); } ?>
 			</h3>
+            <?php if(isset($description)) { echo '<p class="c-gray">'. $description. '</p>'; } ?>
 		</div>
 
 		<?php echo $content; ?>
