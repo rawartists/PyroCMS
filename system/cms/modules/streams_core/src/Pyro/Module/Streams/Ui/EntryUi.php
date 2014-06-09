@@ -159,6 +159,15 @@ class EntryUi extends UiAbstract
             );
         }
 
+        // Set a description if we have one in the lang file
+        $description =  lang(
+            $this->model->getStream()->stream_namespace
+            . '.stream.' . $this->model->getStream()->stream_slug
+            . '.description'
+        );
+        $this->description( ($description > '') ? $description : false );
+
+
         ci()->benchmark->mark('entry_ui_trigger_table_view_options_start');
         $viewOptions = EntryViewOptions::make($this->model, $this->getFields('string'), $this->format);
         ci()->benchmark->mark('entry_ui_trigger_table_view_options_end');
