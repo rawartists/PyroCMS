@@ -64,32 +64,7 @@
 
 
 <?php if (!$disableFormOpen): ?>
-    <div class="panel-footer">
-        <button type="submit" name="btnAction" value="save" class="btn btn-success"><?php echo lang(
-                'buttons:save'
-            ); ?></button>
-
-        <?php if (!empty($redirectExit)): ?>
-            <button type="submit" name="btnAction" value="exit" class="btn btn-info"><?php echo lang(
-                    'buttons:save_exit'
-                ); ?></button>
-        <?php endif; ?>
-
-        <?php if (!empty($redirectCreate)): ?>
-            <button type="submit" name="btnAction" value="create" class="btn btn-info"><?php echo lang(
-                    'buttons:save_create'
-                ); ?></button>
-        <?php endif; ?>
-
-        <?php if (!empty($redirectContinue)): ?>
-            <button type="submit" name="btnAction" value="continue" class="btn btn-info"><?php echo lang(
-                    'buttons:save_continue'
-                ); ?></button>
-        <?php endif; ?>
-
-        <a href="<?php echo site_url(isset($uriCancel) ? $uriCancel : $redirectSave); ?>"
-           class="btn btn-default"><?php echo lang('buttons:cancel'); ?></a>
-    </div>
+    <?php include('buttons.php'); ?>
 <?php endif; ?>
 
 
