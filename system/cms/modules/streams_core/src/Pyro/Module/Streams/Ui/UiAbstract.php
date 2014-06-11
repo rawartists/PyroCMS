@@ -464,6 +464,7 @@ abstract class UiAbstract extends Fluent
             ->uriAdd(null)
             ->uriCancel(index_uri())
             ->viewOverride(false)
+            ->viewReadOnly(null)
             ->formOverride(false)
             ->values(array());
     }
