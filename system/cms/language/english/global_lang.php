@@ -133,3 +133,7 @@ $lang['global:details'] = 'Details';
 
 // Confirmations
 $lang['global:confirm_action'] = 'Are you sure you want to do this?';
+
+// Time
+$lang['global:time'] = 'Time';
+$lang['global:how_old'] = 'How old';
