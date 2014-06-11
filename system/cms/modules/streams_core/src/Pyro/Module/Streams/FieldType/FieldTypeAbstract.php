@@ -482,6 +482,20 @@ abstract class FieldTypeAbstract
     }
 
     /**
+     * Output form input for hidden field
+     *
+     * @param    array
+     * @param    array
+     * @return    string
+     */
+    public function formInputHidden()
+    {
+
+        return form_hidden($this->form_slug, $this->value);
+
+    }
+
+    /**
      * Output form output
      *
      * @param    array
@@ -617,6 +631,14 @@ abstract class FieldTypeAbstract
         );
     }
 
+    public function formInputRowHidden()
+    {
+        return $this->view(
+            $this->getParameter('form_input_row_hidden', 'module::streams_core/fields/form_input_row_hidden'),
+            array('field_type' => $this)
+        );
+    }
+
     public function formOutputRow()
     {
         return $this->view(
@@ -697,6 +719,11 @@ abstract class FieldTypeAbstract
         return defined('ADMIN_THEME') ? $this->formInput() : $this->publicFormInput();
     }
 
+    public function getInputHidden()
+    {
+        return defined('ADMIN_THEME') ? $this->formInputHidden() : $this->publicFormInputHidden();
+    }
+
     public function getOutput()
     {
         return defined('ADMIN_THEME') ? $this->formOutput() : $this->publicFormOutput();
@@ -712,6 +739,18 @@ abstract class FieldTypeAbstract
     public function publicFormInput()
     {
         return $this->formInput();
+    }
+
+    /**
+     * Output public form input for hidden fields
+     *
+     * @param    array
+     * @param    array
+     * @return    string
+     */
+    public function publicFormInputHidden()
+    {
+        return $this->formInputHidden();
     }
 
     /**
