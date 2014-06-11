@@ -13,5 +13,5 @@
 </label>
 
 <div class="col-lg-10">
-    <?php echo $field_type->getInput(); ?>
+    asdf<?php echo $field_type->getInputHidden(); ?>asdf
 </div>
