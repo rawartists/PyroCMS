@@ -281,8 +281,17 @@ class EntryFormBuilder extends UiAbstract
 
                 } else {
 
-                    $field->form_input = $type->getInput();
-                    $field->input_row  = $type->formInputRow();
+                    if($field->is_hidden) {
+
+                        $field->form_input = $type->getInputHidden();
+                        $field->input_row  = $type->formInputRowHidden();
+
+                    } else {
+
+                        $field->form_input = $type->getInput();
+                        $field->input_row  = $type->formInputRow();
+
+                    }
 
                 }
 
