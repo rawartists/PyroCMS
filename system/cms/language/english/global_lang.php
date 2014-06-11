@@ -104,6 +104,8 @@ $lang['global:start']       = 'Start';
 $lang['global:starting']    = 'Starting';
 $lang['global:end']         = 'End';
 $lang['global:ending']      = 'Ending';
+$lang['global:menu']        = 'Menu';
+$lang['global:main_menu']   = 'Main Menu';
 
 $lang['global:keywords'] = 'Keywords';
 
@@ -123,8 +125,6 @@ $lang['global:plain-text'] = 'Plain Text';
 $lang['global:unauthorized']     = 'Unauthorized Access';
 $lang['global:invalid_resource'] = 'This is not a valid resource.';
 
-/* End of file global_lang.php */
-
 $lang['global:type']    = 'Type';
 $lang['global:status']  = 'Status';
 $lang['global:sold']    = 'Sold';
@@ -135,5 +135,7 @@ $lang['global:details'] = 'Details';
 $lang['global:confirm_action'] = 'Are you sure you want to do this?';
 
 // Time
-$lang['global:time'] = 'Time';
+$lang['global:time']    = 'Time';
 $lang['global:how_old'] = 'How old';
+
+/* End of file global_lang.php */
