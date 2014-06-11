@@ -274,7 +274,7 @@ class EntryFormBuilder extends UiAbstract
 
 
                 // Input or readonly
-                if(in_array($field->field_slug, $this->getReadonly())) {
+                if(in_array($field->field_slug, $this->getReadonly()) or $this->viewReadOnly == true) {
 
                     $field->form_input = $type->getOutput();
                     $field->input_row  = $type->formOutputRow();
