@@ -176,6 +176,8 @@ class Datetime extends FieldTypeAbstract
             // So we have a post value - grab it
             if (!($this->value) or $this->value == null or $this->value == $this->zeroDatetime or $this->value == $this->zeroTime) {
 
+                // No post data
+
             } else {
 
                 // Yep - are we using time?
@@ -195,14 +197,26 @@ class Datetime extends FieldTypeAbstract
 
                 }
             }
+
+
+        // Getting stored UTC date from database
+
         } else {
 
-            // So we have a post value - grab it
             if ($this->value == null or $this->value == $this->zeroDatetime) {
 
+                // No value, do nothing
+
             } else {
+
+                // Get the value in database, that is in UTC format
                 $datetime = Carbon::createFromFormat($this->storageFormat, $this->value);
+
+                // If we are using time, we need to account for the Timezone change
+                $datetime = ($this->getParameter('use_time', 'no') == 'yes')  ? $this->adjustTimezone($datetime) : $datetime;
+
             }
+
         }
 
         // This is our form output type
@@ -304,6 +318,7 @@ class Datetime extends FieldTypeAbstract
         // Time
         // -------------------------------------
         if ($this->getParameter('use_time') == 'yes') {
+
             // Input options
             $options = array(
                 'name'        => $this->form_slug . '_time',
@@ -361,10 +376,8 @@ class Datetime extends FieldTypeAbstract
 
                     $time = ($time > '') ? $time : $this->blankTime;
 
-                    return Carbon::createFromFormat(
-                        $this->datepickerFormatPhp . ' ' . $this->timepickerFormat,
-                        $date . ' ' . $time
-                    )->second(0)->format($this->storageFormat);
+                    // Tests for presence of timezone field to make proper adjustments
+                    return $this->saveUTC($date, $time);
 
                 } else {
                     return Carbon::createFromFormat($this->datepickerFormatPhp, $date)->hour(0)->minute(0)->second(
@@ -666,4 +679,49 @@ class Datetime extends FieldTypeAbstract
         // Return the differences
         return (array)$datetime->diff($delta_datetime, (bool)$absolute);
     }
+
+    /**
+     * When using datetime, we need to see if we have a timezone method we need to apply
+     *
+     * @param $datetime
+     * @return mixed
+     */
+    public function adjustTimezone($datetime) {
+
+        return (isset($this->entry->timezone))
+            ? $datetime->setTimezone($this->entry->timezone)
+            : $datetime;
+
+    }
+
+    public function saveUTC($date, $time) {
+
+
+        // Do we have a timezone field in this stream?
+        if(isset($this->entry->timezone)){
+
+            $dt = Carbon::createFromFormat(
+                $this->datepickerFormatPhp . ' ' . $this->timepickerFormat,
+                $date . ' ' . $time, $this->entry->timezone
+            )->second(0);
+
+            // Now set back to UTC for saving
+            return $dt->setTimezone('UTC')->format($this->storageFormat);
+
+        // Keep in assumed UTC format
+        } else {
+
+            return Carbon::createFromFormat(
+                $this->datepickerFormatPhp . ' ' . $this->timepickerFormat,
+                $date . ' ' . $time
+            )->second(0)->format($this->storageFormat);
+
+        }
+
+
+    }
+
+
+
+
 }
