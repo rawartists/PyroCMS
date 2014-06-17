@@ -5,6 +5,7 @@ $lang['global:profile']       = 'Profile';
 
 $lang['global:title']             = 'Title';
 $lang['name_label']               = 'Name';
+$lang['global:name']              = 'Name';
 $lang['desc_label']               = 'Description';
 $lang['version_label']            = 'Version';
 $lang['global:author']            = 'Author';
