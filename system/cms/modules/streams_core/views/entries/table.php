@@ -97,7 +97,9 @@
 <?php if ($entries->count() > 0): $i = 0; ?>
     <?php foreach ($entries as $entry) {
 
-        $entry_key = md5($entry.uri_string());
+        ob_start();
+        var_dump($entry.uri_string().$buttons);
+        $entry_key = md5(ob_get_clean());
 
         if (ci()->cache->isEnabled()) {
             if ($cached_entry = ci()->cache->get($entry_key)) {
@@ -189,7 +191,8 @@
                             $button['html'],
                             $entry,
                             true,
-                            true
+                            true,
+                            false
                         );
                         continue;
                     }
@@ -199,7 +202,8 @@
                         $button['url'],
                         $entry,
                         true,
-                        true
+                        true,
+                        false
                     );
                     $url = str_replace('-entry_id-', $entry->getKey(), $url);
 
@@ -211,7 +215,7 @@
 
                     // Parse variables in attributes
                     foreach ($button as $key => &$value) {
-                        $value = ci()->parser->parse_string($value, get_object_vars($entry), true);
+                        $value = ci()->parser->parse_string($value, $entry, true, true, false);
                     }
 
                     $all_buttons[] = anchor($url, $label, $button);
