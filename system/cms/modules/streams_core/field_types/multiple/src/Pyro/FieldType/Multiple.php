@@ -255,7 +255,7 @@ class Multiple extends FieldTypeAbstract
      *
      * @return string
      */
-    protected function getPlaceholder()
+    public function getPlaceholder()
     {
         if ($this->getParameter('use_ajax')) {
             $placeholder = lang('streams.multiple.placeholder');
