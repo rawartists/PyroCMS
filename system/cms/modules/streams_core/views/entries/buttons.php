@@ -47,7 +47,7 @@
     <?php endif; ?>
 
     <a href="<?php //echo site_url(isset($uriCancel) ? ci()->parser->parse_string($uriCancel, array('id' => $entry->id), true) : $redirectSave);
-    echo site_url(isset($uriCancel) ? $uriCancel : $redirectSave); ?>"
+    echo site_url(ci()->parser->parse_string(isset($uriCancel) ? $uriCancel : $redirectSave, $field_type->entry->toArray(), true, true, false)); ?>"
        class="btn btn-default <?php echo (array_key_exists(
            'class',
            $cancelButtonMeta
