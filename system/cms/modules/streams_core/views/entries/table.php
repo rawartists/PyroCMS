@@ -97,9 +97,9 @@
 <?php if ($entries->count() > 0): $i = 0; ?>
     <?php foreach ($entries as $entry) {
 
-        ob_start();
-        var_dump($entry.uri_string().$buttons);
-        $entry_key = md5(ob_get_clean());
+        //ob_start();
+        //var_dump($entry.uri_string().$buttons);
+        $entry_key = md5($entry.uri_string());
 
         if (ci()->cache->isEnabled()) {
             if ($cached_entry = ci()->cache->get($entry_key)) {
