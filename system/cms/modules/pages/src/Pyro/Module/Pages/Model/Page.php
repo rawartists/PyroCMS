@@ -136,17 +136,19 @@ class Page extends Eloquent
      */
     public function tree(array $columns = array('*'))
     {
-        return $this
+        $pages = $this
             ->with(
                 array(
-                    'children.entry',
-                    'entry'
+                    //'children.entry',
+                    //'entry'
                 )
             )
             ->where('entry_id', '>', '')
             ->orderBy('order')
-            ->get($columns)
-            ->tree();
+            ->get($columns);
+            //->tree();
+
+        print_r($pages->toArray());die;
     }
 
     /**
