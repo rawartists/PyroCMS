@@ -1,5 +1,6 @@
 <?php
 
+use Pyro\Module\Comments\Model\Comment;
 use Pyro\Module\Pages\Model\Page;
 use Pyro\Module\Pages\Model\PageType;
 use Pyro\Module\Pages\Ui\PageEntryUi;
@@ -33,6 +34,7 @@ class Admin extends Admin_Controller
         $this->ui        = new PageEntryUi();
         $this->pages     = new Page();
         $this->pageTypes = new PageType();
+        $this->comments  = new Comment();
     }
 
     /**
@@ -286,7 +288,7 @@ class Admin extends Admin_Controller
                     $deleted_ids = $id;
 
                     // Delete any page comments for this entry
-                    Comment::where('module', '=', 'pages')
+                    $this->comments->where('module', '=', 'pages')
                         ->where('entry_id', '=', $id)
                         ->delete();
 
