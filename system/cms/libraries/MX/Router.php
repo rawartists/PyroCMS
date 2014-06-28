@@ -255,7 +255,7 @@ class MX_Router extends CI_Router
         $config = $db[$active_group];
 
         // Is this a PDO connection?
-        if ($config) {
+        if (isset($config['dsn'])) {
 
             preg_match('/(mysql|pgsql|sqlite)+:host=(\w.+).+dbname=(\w+)/', $config['dsn'], $matches);
             //print_r($matches);die;
