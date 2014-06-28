@@ -104,7 +104,7 @@ abstract class UiAbstract extends Fluent
             return $this->content;
         }
 
-        ci()->template->build($this->getViewWrapper('admin/partials/blank_section'), $this->attributes);
+        ci()->template->build($this->getViewWrapper('streams_core/partials/section'), $this->attributes);
     }
 
     /**
@@ -406,6 +406,10 @@ abstract class UiAbstract extends Fluent
             ci()->lang->load('streams_api', 'english', false, true, APPPATH . 'libraries/Streams/');
         }
 
+        /**
+         * Some of these modifiers are commented so that they are documented
+         * and so that the getter falls back correctly to its default.
+         */
         $this
             ->assignments(array())
             ->buttons(array())
@@ -463,7 +467,7 @@ abstract class UiAbstract extends Fluent
             ->tableRowClass(null)
             ->uriAdd(null)
             ->uriCancel(index_uri())
-            ->viewOverride(false)
+            //->viewOverride()
             ->viewReadOnly(null)
             ->formOverride(false)
             ->values(array());
