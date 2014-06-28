@@ -285,7 +285,8 @@ class EntryUi extends UiAbstract
         ci()->benchmark->mark('entry_ui_trigger_table_sorting_end');
 
         ci()->benchmark->mark('entry_ui_trigger_table_load_view_streams_core_entries_table_start');
-        $this->content = ci()->load->view('streams_core/entries/table', $this->attributes, true);
+
+        $this->content = ci()->load->view($this->getViewOverride('streams_core/entries/table'), $this->attributes, true);
         ci()->benchmark->mark('entry_ui_trigger_table_load_view_streams_core_entries_table_end');
 
         ci()->benchmark->mark('entry_ui_trigger_table_end');
