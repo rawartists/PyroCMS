@@ -398,6 +398,7 @@ abstract class UiAbstract extends Fluent
      */
     protected function boot()
     {
+        ci()->load->language('buttons');
         ci()->load->language('streams_core/pyrostreams');
         ci()->load->config('streams_core/streams');
 
