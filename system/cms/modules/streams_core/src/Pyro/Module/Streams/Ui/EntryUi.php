@@ -56,6 +56,12 @@ class EntryUi extends UiAbstract
     {
         $this->triggerMethod(__FUNCTION__);
 
+        ci()->template
+            ->append_js('plugin/selectize.js')
+            ->append_js('plugin/nestable.js')
+            ->append_js('plugin/cookie.js')
+            ->append_js('admin.js');
+
         $streamSlug      = null;
         $streamNamespace = null;
 
