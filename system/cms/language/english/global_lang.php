@@ -44,6 +44,7 @@ $lang['navigation_headline']   = 'Navigation';
 $lang['breadcrumb_base_label'] = 'Home';
 
 $lang['logged_in_welcome']  = 'Welcome %s, you are logged in.';
+$lang['global:welcome']     = 'Welcome';
 $lang['logout_label']       = 'Log out';
 $lang['edit_profile_label'] = 'Edit Profile';
 $lang['settings_label']     = 'Settings';
