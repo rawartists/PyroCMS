@@ -11,7 +11,10 @@
 
 	<?php foreach ($fields as $field): ?>
 
-		<div class="form-group <?php  echo in_array($field->field_slug, $hidden) ? 'hidden' : null;  ?>">
+		<div class="form-group
+		    streams-field-type-<?php echo $field->field_type; ?>
+		    streams-field-<?php echo $field->field_namespace; ?>-<?php echo $field->field_slug; ?>
+		    <?php  echo in_array($field->field_slug, $hidden) ? 'hidden' : null;  ?>">
 		<div class="row">
 			
 			<?php echo $field->input_row; ?>
