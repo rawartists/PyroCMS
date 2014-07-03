@@ -132,6 +132,7 @@ $lang['global:status']  = 'Status';
 $lang['global:sold']    = 'Sold';
 $lang['global:move']    = 'Move';
 $lang['global:details'] = 'Details';
+$lang['global:respond'] = 'Respond';
 
 // Confirmations
 $lang['global:confirm_action'] = 'Are you sure you want to do this?';
