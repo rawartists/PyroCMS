@@ -153,48 +153,55 @@ class EntryFormBuilder extends UiAbstract
 
             $validate = $this->getSkipValidation() ? : $this->validator->validate();
 
-            if ($validate) {
-                if (!$this->entry->getKey()) { // new
-                    // ci()->row_m->insert_entry($_POST, $stream_fields, $stream, $skips);
-                    if (!$this->entry->preSave($this->skips + $this->readonly)) {
-                        ci()->session->set_flashdata('notice', lang_label($this->messageError));
-                    } else {
-                        $this->result = $this->entry;
+            try {
 
-                        // -------------------------------------
-                        // Send Emails
-                        // -------------------------------------
+                if ($validate) {
+                    if (!$this->entry->getKey()) { // new
+                        // ci()->row_m->insert_entry($_POST, $stream_fields, $stream, $skips);
+                        if (!$this->entry->preSave($this->skips + $this->readonly)) {
+                            ci()->session->set_flashdata('notice', lang_label($this->messageError));
+                        } else {
+                            $this->result = $this->entry;
 
-                        if (isset($this->emailNotifications) and $this->emailNotifications) {
-                            foreach ($this->emailNotifications as $notify) {
-                                $this->sendEmail($notify, $resultId, !$this->entry->getKey(), $stream);
+                            // -------------------------------------
+                            // Send Emails
+                            // -------------------------------------
+
+                            if (isset($this->emailNotifications) and $this->emailNotifications) {
+                                foreach ($this->emailNotifications as $notify) {
+                                    $this->sendEmail($notify, $resultId, !$this->entry->getKey(), $stream);
+                                }
                             }
+
+                            // -------------------------------------
+
+                            ci()->session->set_flashdata('success', lang_label($this->messageSuccess));
                         }
+                    } else { // edit
+                        if (!$this->entry->preSave($this->skips + $this->readonly) and $this->messageError) {
+                            ci()->session->set_flashdata('notice', lang_label($this->messageError));
+                        } else {
+                            $this->result = $this->entry;
 
-                        // -------------------------------------
+                            // -------------------------------------
+                            // Send Emails
+                            // -------------------------------------
 
-                        ci()->session->set_flashdata('success', lang_label($this->messageSuccess));
-                    }
-                } else { // edit
-                    if (!$this->entry->preSave($this->skips + $this->readonly) and $this->messageError) {
-                        ci()->session->set_flashdata('notice', lang_label($this->messageError));
-                    } else {
-                        $this->result = $this->entry;
-
-                        // -------------------------------------
-                        // Send Emails
-                        // -------------------------------------
-
-                        if (isset($this->emailNotifications) and is_array($this->emailNotifications)) {
-                            foreach ($this->emailNotifications as $notify) {
-                                $this->sendEmail($notify, $resultId, $this->method = 'update', $stream);
+                            if (isset($this->emailNotifications) and is_array($this->emailNotifications)) {
+                                foreach ($this->emailNotifications as $notify) {
+                                    $this->sendEmail($notify, $resultId, $this->method = 'update', $stream);
+                                }
                             }
-                        }
 
-                        // -------------------------------------
-                        ci()->session->set_flashdata('success', lang_label($this->messageSuccess));
+                            // -------------------------------------
+                            ci()->session->set_flashdata('success', lang_label($this->messageSuccess));
+                        }
                     }
                 }
+            } catch (\InvalidArgumentException $e) {
+                // log exception
+            } catch (\Exception $e) {
+
             }
         }
 

@@ -180,21 +180,25 @@ class Datetime extends FieldTypeAbstract
 
             } else {
 
-                // Yep - are we using time?
-                if ($this->getParameter('use_time', 'no') == 'no') {
-                    $datetime = Carbon::createFromFormat($this->datepickerFormatPhp, $date)->hour(0)->minute(0)->second(
-                        0
-                    );
+                try {
+                    // Yep - are we using time?
+                    if ($this->getParameter('use_time', 'no') == 'no') {
+                        $datetime = Carbon::createFromFormat($this->datepickerFormatPhp, $date)->hour(0)->minute(0)->second(
+                            0
+                        );
 
-                } elseif ($this->getParameter('use_time') == 'yes' and $time !== null) {
+                    } elseif ($this->getParameter('use_time') == 'yes' and $time !== null) {
 
-                    $time = ($time > '') ? $time : $this->blankTime;
+                        $time = ($time > '') ? $time : $this->blankTime;
 
-                    $datetime = Carbon::createFromFormat(
-                        $this->datepickerFormatPhp . ' ' . $this->timepickerFormat,
-                        $date . ' ' . $time
-                    );
+                        $datetime = Carbon::createFromFormat(
+                            $this->datepickerFormatPhp . ' ' . $this->timepickerFormat,
+                            $date . ' ' . $time
+                        );
 
+                    }
+                } catch (\InvalidArgumentException $e) {
+                    // log exception
                 }
             }
 
@@ -228,7 +232,7 @@ class Datetime extends FieldTypeAbstract
         // We can either choose the date via
         // the jQuery datepicker or a series
         // of drop down menus.
-        // ------------------------------------	
+        // ------------------------------------
         if ($input_type == 'datepicker') {
 
             // Caps
