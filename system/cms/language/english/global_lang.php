@@ -141,4 +141,5 @@ $lang['global:confirm_action'] = 'Are you sure you want to do this?';
 $lang['global:time']    = 'Time';
 $lang['global:how_old'] = 'How old';
 
+
 /* End of file global_lang.php */
