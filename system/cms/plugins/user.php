@@ -108,7 +108,7 @@ class Plugin_User extends Plugin
             }
 		}
 
-		return $loggedIn ? $this->content() : true;
+		return $loggedIn ? $this->content() : false;
 	}
 
     /**
