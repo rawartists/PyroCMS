@@ -68,7 +68,7 @@
 
             ?>
             <th class="<?php echo $class; ?>">
-                <?php if ($enableSortableHeaders): ?>
+                <?php if ($enableSortableHeaders and in_array($fieldSlug, $sortableColumns)): ?>
                     <a href="<?php echo site_url(uri_string()) . '?' . http_build_query($query_string); ?>">
                         <?php echo $fieldName; ?>
                         <?php if ($caret) {

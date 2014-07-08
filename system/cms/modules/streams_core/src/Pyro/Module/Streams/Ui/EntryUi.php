@@ -191,6 +191,7 @@ class EntryUi extends UiAbstract
         }
         ci()->benchmark->mark('entry_ui_trigger_table_build_pagination_end');
 
+        $this->sortableColumns = $this->model->getAllColumns();
 
         ci()->benchmark->mark('entry_ui_trigger_table_query_builder_start');
         // Allow to modify the query before we execute it
