@@ -84,6 +84,8 @@ $lang['global:enable']    = 'Enable';
 $lang['global:disable']   = 'Disable';
 $lang['global:enabled']   = 'Enabled';
 $lang['global:disabled']  = 'Disabled';
+$lang['global:more']      = 'More';
+$lang['global:all']       = 'All';
 
 $lang['all_right_reserved'] = 'All Rights Reserved.';
 $lang['powered_by_pyrocms'] = 'Powered by PyroCMS';
