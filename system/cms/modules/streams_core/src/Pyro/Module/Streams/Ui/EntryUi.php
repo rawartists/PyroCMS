@@ -196,6 +196,13 @@ class EntryUi extends UiAbstract
         if ($query = $this->fireOnQuery($this->model) and $query instanceof EntryQueryBuilder) {
             $this->query = $query;
         }
+
+        /**
+         * We must filter the query by calling filterQuery()
+         */
+        /** @var  $this->query  EntryQueryBuilder */
+        $this->query = $this->query->filterQuery();
+
         ci()->benchmark->mark('entry_ui_trigger_table_query_builder_end');
 
         /**
