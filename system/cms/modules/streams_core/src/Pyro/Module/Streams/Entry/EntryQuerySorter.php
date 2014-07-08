@@ -28,6 +28,13 @@ class EntryQuerySorter
     protected $orderByRelationMethod;
 
     /**
+     * The Eloquent query builder
+     *
+     * @var \Illuminate\Database\Eloquent\Builder
+     */
+    protected $query;
+
+    /**
      * Construct
      *
      * @param Builder $query
@@ -36,6 +43,7 @@ class EntryQuerySorter
      */
     public function __construct(Builder $query, $orderBy, $sort)
     {
+        $this->schema = ci()->pdb->getSchemaBuilder();
         $this->query                 = $query;
         $this->model                 = $query->getModel();
         $this->orderBy               = $orderBy;
@@ -84,10 +92,11 @@ class EntryQuerySorter
 
         }
 
-        if ($this->orderBy) {
+        if ($this->orderBy and $this->schema->hasColumn($this->model->getTable(), $this->orderBy)) {
             $this->query->orderBy($this->orderBy, $this->sort);
         }
 
-        return $this->query;
+        return $this->query->select($this->model->getTable().'.*');
     }
+
 }
