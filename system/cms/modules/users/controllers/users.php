@@ -33,6 +33,10 @@ class Users extends Public_Controller
      */
     public function index()
     {
+
+        // Redirecting all to /account
+        redirect('/account');
+
         if ($this->current_user) {
             $this->view($this->current_user->username);
         } else {
@@ -47,6 +51,9 @@ class Users extends Public_Controller
      */
     public function view($username = null)
     {
+        // Nobody should be here
+        redirect('/account');
+
         // work out the visibility setting
         switch (Settings::get('profile_visibility')) {
             case 'public':
@@ -616,6 +623,10 @@ class Users extends Public_Controller
      */
     public function edit($id = 0)
     {
+
+        // Nobody should be here
+        redirect(site_url('account'));
+
         if ($this->current_user->isSuperUser() and $id > 0) {
             $user = Model\User::find($id);
 
