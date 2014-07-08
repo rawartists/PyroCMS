@@ -65,6 +65,8 @@ class EntryUi extends UiAbstract
             $streamNamespace = $streamNamespaceOrId;
         }
 
+        $model = $streamSlugOrClassOrModel;
+
         // Is this a model already?
         if ($streamSlugOrClassOrModel instanceof EntryModel) {
             $model = $streamSlugOrClassOrModel;
@@ -72,14 +74,15 @@ class EntryUi extends UiAbstract
             $streamSlug = $streamSlugOrClassOrModel;
             $class      = $this->getEntryModelClass($streamSlug, $streamNamespace);
             $model      = new $class;
-        } elseif (is_string($streamSlugOrClassOrModel) and !$streamSlug and !$streamNamespace) {
-            $class = $streamSlugOrClassOrModel;
-            $model = new $class;
+        } elseif (is_string($model) and !$streamSlug and !$streamNamespace) {
+            $model = new $model;
         }
 
         // If the model does not have an id and we passed one, query it
         if ($model and !$model->getKey() and is_numeric($id)) {
-            $model = $model->find($id);
+            if ($record = $model->find($id)) {
+                $model = $record;
+            }
         }
 
         return $this->model($model);
@@ -188,6 +191,7 @@ class EntryUi extends UiAbstract
         }
         ci()->benchmark->mark('entry_ui_trigger_table_build_pagination_end');
 
+        $this->sortableColumns = $this->model->getAllColumns();
 
         ci()->benchmark->mark('entry_ui_trigger_table_query_builder_start');
         // Allow to modify the query before we execute it
@@ -196,6 +200,13 @@ class EntryUi extends UiAbstract
         if ($query = $this->fireOnQuery($this->model) and $query instanceof EntryQueryBuilder) {
             $this->query = $query;
         }
+
+        /**
+         * We must filter the query by calling filterQuery()
+         */
+        /** @var  $this->query  EntryQueryBuilder */
+        $this->query = $this->query->filterQuery();
+
         ci()->benchmark->mark('entry_ui_trigger_table_query_builder_end');
 
         /**

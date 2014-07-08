@@ -35,10 +35,6 @@ class EntryQueryBuilder extends EloquentQueryBuilder
      */
     public function get($columns = null, $exclude = false)
     {
-        // Get set up with our environment
-
-        $this->filterQuery();
-
         //$columns = $this->prepareColumns($columns);
 
         $this->entries = $this->getModels($columns);
@@ -154,24 +150,12 @@ class EntryQueryBuilder extends EloquentQueryBuilder
      *
      * @return EntryQueryBuilder
      */
-    protected function filterQuery()
+    public function filterQuery()
     {
         $filter = new EntryQueryFilter($this);
 
         $filter->make();
 
         return $filter->getQuery();
-    }
-
-    /**
-     * Retrieve the "count" result of the query.
-     * @param  string $column
-     * @return int
-     */
-    public function count($column = '*')
-    {
-        $this->filterQuery();
-
-        return parent::count($column);
     }
 }
