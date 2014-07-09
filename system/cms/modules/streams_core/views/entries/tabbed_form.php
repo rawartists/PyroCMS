@@ -63,7 +63,7 @@
 <?php endif; ?>
 
 
-<?php if (!$disableFormOpen): ?>
+<?php if (!$disableFormOpen and $buttons): ?>
     <?php include('buttons.php'); ?>
 <?php endif; ?>
 

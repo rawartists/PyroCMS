@@ -29,7 +29,7 @@
 
 <?php if (!$new) { ?><input type="hidden" value="<?php echo $entry->id;?>" name="row_edit_id" /><?php } ?>
 
-<?php if (!$disableFormOpen): ?>
+<?php if (!$disableFormOpen and $buttons): ?>
         <?php include('buttons.php'); ?>
 <?php endif; ?>
 

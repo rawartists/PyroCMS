@@ -393,4 +393,17 @@ class EntryUi extends UiAbstract
 
         return (ci()->input->get($key));
     }
+
+    /**
+     * View read only
+     *
+     * @param bool $viewReadonly
+     * @return $this
+     */
+    public function viewReadOnly($viewReadonly = false)
+    {
+        $this->buttons(!$viewReadonly);
+        $this->attributes['viewReadOnly'] = $viewReadonly;
+        return $this;
+    }
 }
