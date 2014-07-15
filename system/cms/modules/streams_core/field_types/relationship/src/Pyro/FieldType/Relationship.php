@@ -87,7 +87,7 @@ class Relationship extends FieldTypeAbstract
                 'relationClass'  => $this->getRelationClass(),
             );
 
-            $this->appendMetadata($this->view('fragments/relationship.js.php', $data, true));
+            $this->appendMetadata($this->view('fragments/relationship.js.php', $data));
         }
     }
 
