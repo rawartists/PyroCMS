@@ -1,15 +1,16 @@
 <?php namespace Pyro\FieldType;
 
-use Pyro\Module\Streams\FieldType\FieldTypeAbstract;
 use Pyro\Module\Streams\Field\FieldModel;
+use Pyro\Module\Streams\FieldType\FieldTypeAbstract;
 
 /**
  * PyroStreams Slug Field Type
+ *
  * @package        PyroCMS\Core\Modules\Streams Core\Field Types
- * @author        Parse19
- * @copyright    Copyright (c) 2011 - 2012, Parse19
+ * @author         Parse19
+ * @copyright      Copyright (c) 2011 - 2012, Parse19
  * @license        http://parse19.com/pyrostreams/docs/license
- * @link        http://parse19.com/pyrostreams
+ * @link           http://parse19.com/pyrostreams
  */
 class Slug extends FieldTypeAbstract
 {
@@ -28,6 +29,7 @@ class Slug extends FieldTypeAbstract
     /**
      * Event
      * Add the slugify plugin
+     *
      * @return    void
      */
     public function event()
@@ -42,6 +44,7 @@ class Slug extends FieldTypeAbstract
     /**
      * Pre Save
      * No PyroCMS tags in slug fields.
+     *
      * @return string
      */
     public function preSave()
@@ -55,6 +58,7 @@ class Slug extends FieldTypeAbstract
     /**
      * Pre Output
      * No PyroCMS tags in slugs.
+     *
      * @return string
      */
     public function stringOutput()
@@ -67,32 +71,31 @@ class Slug extends FieldTypeAbstract
 
     /**
      * Output form input
+     *
      * @param    array
      * @return    string
      */
     public function formInput()
     {
-        $options['name']         = $this->form_slug;
-        $options['id']           = $this->form_slug;
+        $data = [
+            'stream'    => $stream = $this->entry->getStream(),
+            'slugField' => $slugField = $this->getParameter('slug_field'),
+            'id'        => $id = $stream->stream_namespace . '-' . $stream->stream_slug . '-' . $slugField,
+            'spaceType' => $this->getParameter('space_type'),
+            'formSlug'  => $this->getFormSlug()
+        ];
+
+        $options['name']         = $this->getFormSlug();
+        $options['id']           = $this->getFormSlug();
         $options['value']        = $this->value;
         $options['autocomplete'] = 'off';
         $options['class']        = 'form-control';
         $options['placeholder']  = $this->getPlaceholder();
         $jquery                  = null;
 
-        $stream    = $this->entry->getStream();
-        $slugField = $this->getParameter('slug_field');
-        $id        = $stream->stream_namespace . '-' . $stream->stream_slug . '-' . $slugField;
+        $this->appendMetadata($this->view('slug.js.php', $data));
 
-        $jquery = "
-            <script>
-                $(document).ready(function(){
-                    Pyro.GenerateSlug('#{$id}', '#{$this->form_slug}', '{$this->getParameter('space_type')}');
-                });
-            </script>
-            ";
-
-        return form_input($options) . "\n" . $jquery;
+        return form_input($options);
     }
 
     // --------------------------------------------------------------------------
