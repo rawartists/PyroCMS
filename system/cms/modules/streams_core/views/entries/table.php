@@ -180,7 +180,7 @@
 
             $row_html .= '<td class="text-right">';
 
-            if (isset($buttons)) {
+            if (is_array($buttons)) {
                 $all_buttons = array();
 
                 foreach ($buttons as $button) {

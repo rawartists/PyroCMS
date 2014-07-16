@@ -114,14 +114,12 @@ class Admin extends Admin_Controller
             return false;
         }
 
-        $user = User::findByEmail($this->input->post('email'));
-
-        if ($user->is_blocked) {
+        if ($user = User::findByEmail($this->input->post('email')) and $user->is_blocked) {
             $this->sentry->logout($user);
             throw new \Exception('Your account has been blocked.');
+        } elseif ($user) {
+            Events::trigger('post_admin_login', $user);
         }
-
-        Events::trigger('post_admin_login', $user);
 
         return true;
     }
