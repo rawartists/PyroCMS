@@ -159,7 +159,7 @@ class EntryFormBuilder extends UiAbstract
                     if (!$this->entry->getKey()) { // new
                         // ci()->row_m->insert_entry($_POST, $stream_fields, $stream, $skips);
                         if (!$this->entry->preSave($this->skips + $this->readonly)) {
-                            ci()->session->set_flashdata('notice', lang_label($this->messageError));
+                            ci()->session->set_flashdata('error', lang_label($this->messageError));
                         } else {
                             $this->result = $this->entry;
 
@@ -175,11 +175,13 @@ class EntryFormBuilder extends UiAbstract
 
                             // -------------------------------------
 
-                            ci()->session->set_flashdata('success', lang_label($this->messageSuccess));
+                            ci()->session->set_flashdata('error', lang_label($this->messageSuccess));
                         }
                     } else { // edit
                         if (!$this->entry->preSave($this->skips + $this->readonly) and $this->messageError) {
-                            ci()->session->set_flashdata('notice', lang_label($this->messageError));
+
+
+                            ci()->session->set_flashdata('error', lang_label($this->messageError));
                         } else {
                             $this->result = $this->entry;
 
@@ -197,6 +199,9 @@ class EntryFormBuilder extends UiAbstract
                             ci()->session->set_flashdata('success', lang_label($this->messageSuccess));
                         }
                     }
+                } else {
+                    ci()->session->set_flashdata('error', validation_errors());
+                    redirect(current_url());
                 }
             } catch (\InvalidArgumentException $e) {
                 // log exception
