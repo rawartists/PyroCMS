@@ -354,6 +354,7 @@ class Datetime extends FieldTypeAbstract
     {
         if (!defined('ADMIN_THEME')) {
             if ($this->getParameter('input_type', 'datepicker') == 'datepicker') {
+                $this->css('datepicker.css');
                 $this->js('datepicker.js');
                 $this->js('datepicker.init.js');
             }
