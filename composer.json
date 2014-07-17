@@ -27,6 +27,7 @@
         "ircmaxell/password-compat": "1.0.*",
         "loic-sharma/profiler": "1.1.*",
         "mccool/laravel-auto-presenter": "*",
+        "nass600/get-id3": "dev-master",
         "nesbot/Carbon": "1.*",
         "patchwork/utf8": "1.1.*",
         "pyrocms/lex": "2.3.*",
