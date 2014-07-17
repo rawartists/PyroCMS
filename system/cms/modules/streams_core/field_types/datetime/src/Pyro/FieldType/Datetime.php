@@ -350,6 +350,20 @@ class Datetime extends FieldTypeAbstract
         return '<div>' . $date_input . '</div>';
     }
 
+    public function event()
+    {
+        if (!defined('ADMIN_THEME')) {
+            if ($this->getParameter('input_type', 'datepicker') == 'datepicker') {
+                $this->js('datepicker.js');
+                $this->js('datepicker.init.js');
+            }
+            if ($this->getParameter('use_time') == 'yes') {
+                $this->js('timepicker.js');
+                $this->js('timepicker.init.js');
+            }
+        }
+    }
+
     /**
      * Process before saving to database
      *
