@@ -68,6 +68,23 @@ class Events_Templates
             $body = $templates->findByLang($lang)->body ;
             $body = ci()->parser->parse_string($body, $data, true);
 
+
+            // Theme Wrapper
+            // If they don't have one set, we look for one called "general-template"
+            $theme_slug = isset($data['theme_slug']) ? $data['theme_slug'] : "general-template";
+
+            // Get theme record
+            $theme = TemplateEntryModel::where('slug', '=', $theme_slug)->first();
+
+            // If we have one, lets use it!
+            if(isset($theme->id)) {
+
+                // Wrap it up, looking for {{ content }} tag
+                $body = ci()->parser->parse_string($theme->body, array('content' => $body), true);
+
+            }
+            // Otherwise, carry on like normal
+
             ci()->email
                 ->from($from, $from_name)
                 ->reply_to($reply_to)
@@ -90,4 +107,6 @@ class Events_Templates
         //return false if we can't find the necessary templates
         return false;
     }
+
+
 }
