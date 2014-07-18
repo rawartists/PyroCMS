@@ -1,4 +1,4 @@
-<?php if ($fields): ?>
+<?php if ($buildFields): ?>
 
 
 <?php if (!$disableFormOpen): ?>
@@ -9,7 +9,7 @@
 <!-- .panel-body -->
 <div class="panel-body">
 
-	<?php foreach ($fields as $field): ?>
+	<?php foreach ($buildFields as $field): ?>
 
 		<div class="form-group
 		    streams-field-type-<?php echo $field->field_type; ?>
