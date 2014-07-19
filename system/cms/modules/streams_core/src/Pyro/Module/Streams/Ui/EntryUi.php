@@ -329,19 +329,19 @@ class EntryUi extends UiAbstract
         $this->assignments = $this->model->getAssignments();
         $this->form        = $this->model->newFormBuilder($this->attributes);
 
-        $this->fields = $this->form->buildForm() ? : new FieldCollection;
+        $this->buildFields = $this->form->buildForm() ? : new FieldCollection;
 
         if ($this->getIsMultiForm()) {
 
-            $original_fields = $this->fields;
+            $original_fields = $this->buildFields;
 
-            $this->fields = array();
+            $this->buildFields = array();
 
             foreach ($original_fields as $field_slug => $field) {
-                $this->fields[$this->stream->stream_slug . ':' . $this->stream->stream_namespace . ':' . $field_slug] = $field;
+                $this->buildFields[$this->stream->stream_slug . ':' . $this->stream->stream_namespace . ':' . $field_slug] = $field;
             }
 
-            $this->fields->merge($this->nested_fields);
+            $this->buildFields->merge($this->nested_fields);
         }
 
         if ($saved = $this->form->get('result') and $this->enableSave and !$this->isNestedForm) {
@@ -362,12 +362,21 @@ class EntryUi extends UiAbstract
             );
         }
 
+        $fields = $this->getFields();
+        if (!empty($fields)) {
+            foreach($this->buildFields as $key => $field) {
+                if (!in_array($field->field_slug, $fields)) {
+                    $this->buildFields->forget($key);
+                }
+            }
+        }
+
         if (empty($this->tabs)) {
             $this->content = ci()->load->view($this->view ? : 'streams_core/entries/form', $this->attributes, true);
         } else {
 
 
-            $fieldGroupCollection = new FieldGroupCollection($this->tabs, $this->fields);
+            $fieldGroupCollection = new FieldGroupCollection($this->tabs, $this->buildFields);
 
             $this->tabs = $fieldGroupCollection->distribute()->toArray();
 
