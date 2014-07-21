@@ -56,7 +56,7 @@
 
     <?php endforeach; ?>
 
-    <?php
+    <?php endif; ?>
 
 </section>
 <!-- /.tab-content.panel-body -->
