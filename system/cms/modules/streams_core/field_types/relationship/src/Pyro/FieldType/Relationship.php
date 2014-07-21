@@ -77,8 +77,11 @@ class Relationship extends FieldTypeAbstract
             $class = $this->getRelationClass();
             $model = new $class;
 
+            // It appears we need to get the record as a model
+            $result = $model->find($this->value);
+
             $data = array(
-                'value'          => null,
+                'value'          => $result,
                 'jquerySelector' => $this->form_slug . '-selectize',
                 'valueField'     => $model->getFieldTypeRelationshipValueField(),
                 'searchFields'   => $model->getFieldTypeRelationshipSearchFields(),
@@ -110,6 +113,7 @@ class Relationship extends FieldTypeAbstract
         }
 
         return form_dropdown($this->form_slug, $options, $this->value, $attributes);
+
     }
 
     /**
