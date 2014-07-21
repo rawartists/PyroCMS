@@ -23,6 +23,8 @@
 <!-- .tab-content.panel-body -->
 <section class="tab-content panel-body">
 
+    <?php if (isset($buildFields)): ?>
+
     <?php foreach ($tabs as $tab): ?>
 
         <div class="tab-pane <?php echo array_search($tab, $tabs) == 0 ? 'active' : null; ?>"
@@ -36,7 +38,7 @@
 
                 <?php foreach ($tab['fields'] as $slug): ?>
 
-                    <?php if ($field = $fields->findBySlug($slug)): ?>
+                    <?php if ($field = $buildFields->findBySlug($slug)): ?>
                         <div class="form-group <?php echo in_array($field->field_slug, $hidden) ? 'hidden' : null; ?>">
                             <div class="row">
 
@@ -53,6 +55,8 @@
         </div>
 
     <?php endforeach; ?>
+
+    <?php endif; ?>
 
 </section>
 <!-- /.tab-content.panel-body -->
