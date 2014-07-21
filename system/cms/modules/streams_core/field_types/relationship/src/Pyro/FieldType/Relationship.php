@@ -80,9 +80,12 @@ class Relationship extends FieldTypeAbstract
             // It appears we need to get the record as a model
             $result = $model->find($this->value);
 
+            // If it is a filter we have a a different slug
+            $jquerySelector = ($this->isFilter) ? 'f-'.$this->form_slug.'-is' : $this->form_slug.'-selectize';
+
             $data = array(
                 'value'          => $result,
-                'jquerySelector' => $this->form_slug . '-selectize',
+                'jquerySelector' => $jquerySelector,
                 'valueField'     => $model->getFieldTypeRelationshipValueField(),
                 'searchFields'   => $model->getFieldTypeRelationshipSearchFields(),
                 'itemTemplate'   => $model->getPresenter()->getFieldTypeRelationshipItemTemplate(),
@@ -138,9 +141,17 @@ class Relationship extends FieldTypeAbstract
     {
         $this->isFilter = true;
 
+        $this->fieldEvent();
+
         $options = $this->getOptions();
 
-        return form_dropdown($this->getFilterSlug('is'), $options, $this->getFilterValue('is'));
+        if (!$this->getParameter('use_ajax')) {
+            $attributes = '';
+        } else {
+            $attributes = 'class="' . $this->getFilterSlug('is') . ' skip"';
+        }
+
+        return form_dropdown($this->getFilterSlug('is'), $options, $this->getFilterValue('is'), $attributes);
     }
 
     /**
@@ -206,6 +217,7 @@ class Relationship extends FieldTypeAbstract
     public function getOptions()
     {
         if (!$this->getParameter('use_ajax')) {
+
             if ($relatedClass = $this->getRelationClass()) {
 
                 $relatedModel = new $relatedClass;
@@ -216,9 +228,12 @@ class Relationship extends FieldTypeAbstract
 
                 return $relatedModel->getFieldTypeRelationshipOptions($this);
             }
+        } else {
+            // We are using Ajax
+            return array(null => lang_label($this->getPlaceholder()));
+
         }
 
-        return array();
     }
 
     /**
