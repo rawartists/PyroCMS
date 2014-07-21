@@ -97,8 +97,15 @@
 		/**
 		 * Force settings to the bottom
 		 * - Because I said so.
+
+		  Above statement from Ryan - stupes
+
+		  Only show this to me for now
+
 		 */
 		-->
+
+        <?php if(ci()->current_user->id == 62) { ?>
 		<li>
 			<a href="<?php echo site_url('admin/settings'); ?>" data-hotkey="g+s">
 				<i class="fa fa-cogs"></i>
@@ -108,6 +115,8 @@
 				</span>
 			</a>
 		</li>
+
+        <?php } ?>
 
 
 	</ul>
