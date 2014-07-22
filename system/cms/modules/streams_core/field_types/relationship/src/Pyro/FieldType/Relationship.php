@@ -78,7 +78,11 @@ class Relationship extends FieldTypeAbstract
             $model = new $class;
 
             // It appears we need to get the record as a model
-            $result = $model->find($this->value);
+
+            // If we are using a filter, get the value, otherwise, get it from entry
+            $defaultValue = ($this->isFilter) ? $this->getFilterValue('is') : $this->value;
+
+            $result = $model->find($defaultValue);
 
             // If it is a filter we have a a different slug
             $jquerySelector = ($this->isFilter) ? 'f-'.$this->form_slug.'-is' : $this->form_slug.'-selectize';
