@@ -557,6 +557,37 @@ class Page extends Eloquent
         return static::whereIn('id', $ids)->update(array('parent_id' => 0));
     }
 
+    public function createFromEntry($entry, $typeId = 1, $parentId = 0)
+    {
+        if ($parentId == null) {
+            $parentId = 0;
+        }
+
+        $page = array(
+            'type_id'    => $typeId,
+            'parent_id'  => $parentId,
+            'entry_type' => get_class($entry),
+            'entry_id'   => $entry->id,
+            'is_home'    => $entry->is_home,
+            'uri'        => $this->uri($entry),
+        );
+
+        $this->insert($page);
+
+        $this->flushCacheCollection();
+    }
+
+    public function uri($entry)
+    {
+        $uri = $entry->slug;
+
+        if ($entry->parent) {
+            $uri .= '/'.$this->uri($this->parent);
+        }
+
+        return $uri;
+    }
+
     // --------------------------------------------------------------------------
 
     /**
