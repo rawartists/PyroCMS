@@ -69,28 +69,9 @@ class Admin extends Admin_Controller
         // Directly output the menu if it's for the modal.
         // All we need is the <ul>.
         if ($this->input->is_ajax_request()) {
-            $html = '<h4>' . lang('pages:choose_type_title') . '</h4>';
-            $html .= '<ul class="modal_select">';
-
-            foreach ($types as $pt) {
-                $html .= '<li><a href="' . site_url(
-                        'admin/pages/create?page_type=' . $pt->id . $parent
-                    ) . '"><strong>' . $pt->title . '</strong>';
-
-                if (trim($pt->description)) {
-                    $html .= ' | ' . $pt->description;
-                }
-
-                $html .= '</a></li>';
-            }
-
-            echo $html .= '</ul>';
-
-            return;
+            $this->template->set_layout(false);
         }
 
-        // If this is not being displayed in the modal, we can
-        // display an entire page.
         $this->template
             ->set('parent', $parent)
             ->set('types', $types)
@@ -225,7 +206,7 @@ class Admin extends Admin_Controller
     public function create()
     {
         if (!$pageType = $this->pageTypes->find($this->input->get('page_type'))) {
-            redirect('admin/pages/choose_type');
+            redirect('admin/pages');
         }
 
         if ($parentId = $this->input->get('parent')) {
@@ -239,12 +220,18 @@ class Admin extends Admin_Controller
             $pageType->stream->stream_namespace
         );
 
+        $pages = $this->pages;
+
         $this->ui
             ->title(lang('pages:create_title'))
             ->form($entryModelClass)
+            ->onSaved(
+                function ($entry) use ($pages) {
+                    $pages->createFromEntry($entry, ci()->input->get('page_type'), ci()->input->get('parent'));
+                }
+            )
             ->render();
     }
-
     /**
      * Edit
      *
