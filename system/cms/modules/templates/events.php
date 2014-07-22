@@ -65,9 +65,9 @@ class Events_Templates
             $subject = $templates->findByLang($lang)->subject;
             $subject = ci()->parser->parse_string($subject, $data, true);
 
-            $body = $templates->findByLang($lang)->body ;
-            $body = ci()->parser->parse_string($body, $data, true);
+            $body = $templates->findByLang($lang)->body;
 
+            $body = ci()->parser->parse_string($body, $data, true);
 
             // Theme Wrapper
             // If they don't have one set, we look for one called "general-template"
@@ -80,9 +80,10 @@ class Events_Templates
             if(isset($theme->id)) {
 
                 // Wrap it up, looking for {{ content }} tag
-                $body = ci()->parser->parse_string($theme->body, array('content' => $body), true);
+                $body = ci()->parser->parse_string($theme->body, array('placement' => $body), true);
 
             }
+
             // Otherwise, carry on like normal
 
             ci()->email
