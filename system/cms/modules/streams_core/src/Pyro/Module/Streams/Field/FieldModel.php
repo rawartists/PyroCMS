@@ -478,17 +478,27 @@ class FieldModel extends Eloquent
         throw new FieldModelNotFoundException;
     }
 
-    public static function getFieldOptions($skips = array())
+    public static function getFieldOptions($skips = array(), $key = 'id')
     {
+        $options = array();
+
         if (is_string($skips)) {
             $skips = array($skips);
         }
 
         if (!empty($skips)) {
-            return static::whereNotIn('field_slug', $skips)->lists('field_name', 'id');
+            $fields = static::whereNotIn('field_slug', $skips)->get();
         } else {
-            return static::lists('field_name', 'id');
+            $fields = static::all();
         }
+
+
+
+        foreach($fields as $field) {
+            $options[humanize($field->field_namespace)][$field->{$key}] = lang_label($field->field_name);
+        }
+
+        return $options;
     }
 
     /**

@@ -127,7 +127,7 @@ class Slug extends FieldTypeAbstract
         }
 
         // Get all the fields
-        $options = FieldModel::getFieldOptions($field_slug);
+        $options = FieldModel::getFieldOptions($field_slug, 'field_slug');
 
         return form_dropdown('slug_field', $options, $value);
     }
