@@ -5,7 +5,7 @@ interface RelationshipInterface
 {
     public function getFieldTypeRelationshipOptions($type);
 
-    public function getFieldTypeRelationshipResults($query);
+    public function getFieldTypeRelationshipResults($query, $form_slug);
 
     public function getFieldTypeRelationshipTitle();
 
