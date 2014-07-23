@@ -29,7 +29,8 @@
                     url: SITE_URL + 'streams_core/public_ajax/field/relationship/search',
                     data: {
                         'relation_class': '<?php echo addslashes($relationClass); ?>',
-                        'term': encodeURIComponent(term)
+                        'term': encodeURIComponent(term),
+                        'form_slug': '<?php echo $form_slug; ?>'
                     },
                     success: function (results) {
 
