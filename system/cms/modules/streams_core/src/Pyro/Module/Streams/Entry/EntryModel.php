@@ -317,7 +317,7 @@ class EntryModel extends Eloquent implements RelationshipInterface
      * @param $query
      * @return mixed
      */
-    public function getFieldTypeRelationshipResults($query)
+    public function getFieldTypeRelationshipResults($query, $field_slug = false)
     {
         echo $this->limit(10)->where($this->getTitleColumn(), 'LIKE', '%' . $query . '%')->get();
     }
