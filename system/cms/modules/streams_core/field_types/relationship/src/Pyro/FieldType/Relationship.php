@@ -95,6 +95,7 @@ class Relationship extends FieldTypeAbstract
                 'itemTemplate'   => $model->getPresenter()->getFieldTypeRelationshipItemTemplate(),
                 'optionTemplate' => $model->getPresenter()->getFieldTypeRelationshipOptionTemplate(),
                 'relationClass'  => $this->getRelationClass(),
+                'form_slug'      => $this->form_slug
             );
 
             $this->appendMetadata($this->view('fragments/relationship.js.php', $data));
@@ -109,6 +110,7 @@ class Relationship extends FieldTypeAbstract
      */
     public function formInput()
     {
+
         $this->isFilter = false;
 
         $options = array(null => lang_label($this->getPlaceholder())) + $this->getOptions();
@@ -260,7 +262,8 @@ class Relationship extends FieldTypeAbstract
         $class = ci()->input->post('relation_class');
         $model = new $class;
         $term  = urldecode(ci()->input->post('term'));
+        $form_slug = ci()->input->post('form_slug');
 
-        echo $model->getFieldTypeRelationshipResults($term);
+        echo $model->getFieldTypeRelationshipResults($term, $form_slug);
     }
 }
