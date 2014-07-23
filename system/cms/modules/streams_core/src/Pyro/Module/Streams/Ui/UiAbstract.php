@@ -514,15 +514,17 @@ abstract class UiAbstract extends Fluent
         $action = ci()->input->post($actionName);
 
         foreach ($this->getValidRedirects() as $name) {
-            if ($action == Str::camel($name)) {
+            if ($action == $name) {
                 try {
-                    $uri = site_url(ci()->parser->parse_string($this->{'redirect' . Str::studly($name)}, $data, true));
+                    // this breaks, replaced with below
+                    //$uri = site_url(ci()->parser->parse_string($this->{'redirect' . Str::studly($name)}, $data, true));
+                    $uri = $this->{'redirect' . Str::studly($name)};
                 } catch (\InvalidArgumentException $e) {
                     // @todo - log exception
                 }
             }
         }
-
+        
         redirect($uri);
     }
 
