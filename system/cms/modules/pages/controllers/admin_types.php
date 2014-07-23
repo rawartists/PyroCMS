@@ -40,9 +40,9 @@ class Admin_types extends Admin_Controller
             'rules' => 'trim|required|alpha_dot_dash|max_length[60]'
         ),
         array(
-             'field' => 'description',
-             'label' => 'lang:global:description',
-             'rules' => 'trim'
+            'field' => 'description',
+            'label' => 'lang:global:description',
+            'rules' => 'trim'
         ),
         array(
             'field' => 'stream_id',
@@ -106,9 +106,9 @@ class Admin_types extends Admin_Controller
         $this->lang->load('page_types');
         $this->load->library('form_validation');
 
-        $this->load->driver('Streams');
-
         $this->fieldUi = new FieldUi();
+
+        $this->pageType = new PageType();
     }
 
     // --------------------------------------------------------------------------
@@ -183,22 +183,39 @@ class Admin_types extends Admin_Controller
             }
 
             // Insert the page type
-            $id = PageType::insert(array(
-                'title' 			=> $input['title'],
-                'slug'				=> $input['slug'],
-                'description'       => $input['description'],
-                'stream_id' 		=> $input['stream_id'],
-                'meta_title' 		=> isset($input['meta_title']) ? $input['meta_title'] : null,
-                //'meta_keywords' 	=> isset($input['meta_keywords']) ? $this->keywords->process($input['meta_keywords']) : '',
-                'meta_description' 	=> isset($input['meta_description']) ? $input['meta_description'] : null,
-                'theme_layout' 		=> $input['theme_layout'],
-                'body' 				=> ($input['body'] ? $input['body'] : false),
-                'css' 				=> $input['css'],
-                'js' 				=> $input['js'],
-                'content_label'		=> $this->input->post('content_label'),
-                'title_label'		=> $this->input->post('title_label'),
-                'save_as_files'		=> (isset($input['save_as_files']) and $input['save_as_files'] == 'y') ? 'y' : 'n'
-            ));
+            $id = PageType::insertGetId(array(
+                    'title' 			=> $input['title'],
+                    'slug'				=> $input['slug'],
+                    'description'       => $input['description'],
+                    'stream_id' 		=> $input['stream_id'],
+                    'meta_title' 		=> isset($input['meta_title']) ? $input['meta_title'] : null,
+                    //'meta_keywords' 	=> isset($input['meta_keywords']) ? $this->keywords->process($input['meta_keywords']) : '',
+                    'meta_description' 	=> isset($input['meta_description']) ? $input['meta_description'] : null,
+                    'theme_layout' 		=> $input['theme_layout'],
+                    'body' 				=> ($input['body'] ? $input['body'] : false),
+                    'css' 				=> $input['css'],
+                    'js' 				=> $input['js'],
+                    'content_label'		=> $this->input->post('content_label'),
+                    'title_label'		=> $this->input->post('title_label'),
+                    'save_as_files'		=> (isset($input['save_as_files']) and $input['save_as_files'] == 'y') ? 'y' : 'n'
+                ));
+
+            FieldModel::assignField($stream_slug, 'pages', 'title', array('is_required' => true));
+            FieldModel::assignField($stream_slug, 'pages', 'slug', array('is_required' => true));
+            FieldModel::assignField($stream_slug, 'pages', 'class', array());
+            FieldModel::assignField($stream_slug, 'pages', 'css', array());
+            FieldModel::assignField($stream_slug, 'pages', 'js', array());
+            FieldModel::assignField($stream_slug, 'pages', 'meta_title', array());
+            FieldModel::assignField($stream_slug, 'pages', 'meta_keywords', array());
+            FieldModel::assignField($stream_slug, 'pages', 'meta_description', array());
+            FieldModel::assignField($stream_slug, 'pages', 'meta_robots_no_index', array());
+            FieldModel::assignField($stream_slug, 'pages', 'meta_robots_no_follow', array());
+            FieldModel::assignField($stream_slug, 'pages', 'rss_enabled', array());
+            FieldModel::assignField($stream_slug, 'pages', 'rss_enabled', array());
+            FieldModel::assignField($stream_slug, 'pages', 'comments_enabled', array());
+            FieldModel::assignField($stream_slug, 'pages', 'status', array('is_required' => true));
+            FieldModel::assignField($stream_slug, 'pages', 'is_home', array());
+            FieldModel::assignField($stream_slug, 'pages', 'strict_uri', array());
 
             // Success or fail?
             if ($id > 0) {
@@ -210,6 +227,10 @@ class Admin_types extends Admin_Controller
                 $this->session->set_flashdata('success', lang('page_types:create_success'));
 
                 $this->cache->forget('page_m');
+
+                ci()->cache->collection($this->pageType->getCacheCollectionKey())->flush();
+
+                $this->pageType->flushCacheCollection();
 
                 // Event: page_type_created
                 Events::trigger('page_type_created', $id);
@@ -266,7 +287,7 @@ class Admin_types extends Admin_Controller
         unset(static::$validate[3]);
 
         // Set the validation rules
-        //$this->form_validation->set_rules(static::$validate);
+        $this->form_validation->set_rules(static::$validate);
 
         $data = new stdClass;
         $data->page_type = PageType::find($id);
@@ -303,6 +324,7 @@ class Admin_types extends Admin_Controller
 
             // Wipe cache for this model as the data has changed
             $this->cache->forget('page_type_m');
+            $this->pageType->flushCacheCollection();
 
             $this->session->set_flashdata('success', sprintf(lang('page_types:edit_success'), $this->input->post('title')));
 
@@ -386,11 +408,13 @@ class Admin_types extends Admin_Controller
 
         // Show our fields list.
         //$this->streams->cp->assignments_table($stream->stream_slug, $stream->stream_namespace, Settings::get('records_per_page'), 'admin/pages/types/fields/'.$page_type->id, true, $extra);
-       $this->fieldUi->assignmentsTable($stream->stream_slug, $stream->stream_namespace)
+        $this->fieldUi->assignmentsTable($stream->stream_slug, $stream->stream_namespace)
             ->title($stream->stream_name.' '.lang('global:fields'))
             ->uris(array(
-                'add' => $page_type_uri.'/new_field'
-            ))
+                    'add' => $page_type_uri.'/new_field'
+                ))
+            ->orderBy('sort_order')
+            ->sort('asc')
             ->pagination(Settings::get('records_per_page'), $page_type_uri)
             ->buttons($buttons)
             ->render();
@@ -407,33 +431,33 @@ class Admin_types extends Admin_Controller
     {
         $page_type = $this->_check_page_type();
 
-         $folder = ADDONPATH.'assets/page_types/'.$page_type->slug.'/'.$page_type->slug.'.';
+        $folder = ADDONPATH.'assets/page_types/'.$page_type->slug.'/'.$page_type->slug.'.';
 
-         $update_data = array();
+        $update_data = array();
 
-         $this->load->helper('file');
+        $this->load->helper('file');
 
-         if (is_file($folder.'html')) $update_data['body'] = read_file($folder.'html');
-          if (is_file($folder.'js')) $update_data['js'] = read_file($folder.'js');
-         if (is_file($folder.'css')) $update_data['css'] = read_file($folder.'css');
+        if (is_file($folder.'html')) $update_data['body'] = read_file($folder.'html');
+        if (is_file($folder.'js')) $update_data['js'] = read_file($folder.'js');
+        if (is_file($folder.'css')) $update_data['css'] = read_file($folder.'css');
 
-         if ($update_data) {
-             PageType::update_by('id', $page_type->id, $update_data);
-         }
+        if ($update_data) {
+            PageType::update_by('id', $page_type->id, $update_data);
+        }
 
-         if (count($update_data) < 3) {
-             if (count($update_data) != 0) {
+        if (count($update_data) < 3) {
+            if (count($update_data) != 0) {
                 $this->session->set_flashdata('notice', sprintf(lang('page_types:sync_notice'), implode(', ', $update_data)));
-             } else {
+            } else {
                 $this->session->set_flashdata('error', lang('page_types:sync_fail'));
-             }
-         } else {
+            }
+        } else {
             $this->session->set_flashdata('success', lang('page_types:sync_success'));
             $this->pyrocache->delete_all('page_m');
             Events::trigger('page_type_updated', $page_type->id);
-         }
+        }
 
-         redirect('admin/pages/types');
+        redirect('admin/pages/types');
     }
 
     // --------------------------------------------------------------------------
