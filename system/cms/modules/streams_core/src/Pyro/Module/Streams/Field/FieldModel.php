@@ -492,10 +492,8 @@ class FieldModel extends Eloquent
             $fields = static::all();
         }
 
-
-
         foreach($fields as $field) {
-            $options[humanize($field->field_namespace)][$field->{$key}] = lang_label($field->field_name);
+            $options[humanize($field->field_namespace)][$field->{$key}] = $field->field_name;
         }
 
         return $options;
@@ -772,10 +770,10 @@ class FieldModel extends Eloquent
         // This guarantees that the language will be loaded
         FieldTypeManager::getType($this->getAttribute('field_type'));
 
-        $name = lang($field_name);
+        $name = lang_label($field_name);
 
         if (empty($name)) {
-            $name = lang_label($field_name);
+            $name = $field_name;
         }
 
         return $name;
