@@ -58,6 +58,7 @@ class Events_Templates
             $from_name = isset($data['name']) ? $data['name'] : null;
             $reply_to  = isset($data['reply-to']) ? $data['reply-to'] : $from;
             $to		   = isset($data['to']) ? $data['to'] : Settings::get('contact_email');
+            $cc		   = isset($data['cc']) ? $data['cc'] : false;
 
             // perhaps they've passed a pipe separated string, let's switch it to commas for CodeIgniter
             if ( ! is_array($to)) $to = str_replace('|', ',', $to);
@@ -92,6 +93,10 @@ class Events_Templates
                 ->to($to)
                 ->subject($subject)
                 ->message($body);
+
+            if($cc) {
+                ci()->email->cc($cc);
+            }
 
             // To send attachments simply pass an array of file paths in Events::trigger('email')
             // $data['attach'][] = /path/to/file.jpg
