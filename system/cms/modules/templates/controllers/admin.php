@@ -37,7 +37,17 @@ class Admin extends Admin_Controller
      */
     public function create()
     {
-        $this->ui->form($this->templates)->render();
+        $this->ui
+            ->form($this->templates)
+            ->fields(array(
+                    'name',
+                    'slug',
+                    'subject',
+                    'description',
+                    'lang',
+                    'body'
+                ))
+            ->render();
     }
 
     /**
@@ -57,6 +67,18 @@ class Admin extends Admin_Controller
                     'description',
                 )
             );
+        } else {
+            $this->ui->fields(array(
+                    'linkPreview' => array(
+                        'name' => lang('name_label'),
+                        'callback' => function() {
+                                return 'link';
+                            },
+                    ),
+                    'description',
+                    'lang',
+                    'body'
+                ));
         }
 
         $this->ui->form($this->templates, $id)->render();
