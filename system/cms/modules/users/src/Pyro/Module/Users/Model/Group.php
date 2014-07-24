@@ -77,4 +77,65 @@ class Group extends EloquentGroup
     {
         return static::where('name', '=', $group_name)->first();
     }
+
+
+    /**
+     * Return true if they are in the group or array of groups sent
+     *
+     * @param bool $groups
+     * @return bool
+     */
+    public static function userIsInGroupSlug($groups = false, $user = false)
+    {
+
+        // Do we have a valid $user object?
+        if(!$user) {
+
+            // If we don't have a current_user object either
+            if(!$user = ci()->current_user) {
+                return false;
+            }
+
+        }
+
+
+        // they have to send a group or array of groups
+        if($groups) {
+
+            // Assume we don't have a match
+            $match = false;
+
+            // Get the logged in user object, it's all there
+            $user_groups = array();
+            foreach($user->groups as $group) {
+                $user_groups[] = $group->name;
+            }
+
+            // If they aren't in any groups, which really shouldn't happen, we return false
+            if(empty($user_groups)) return false;
+
+            // if they sent a single value instead of an array, turn it into an array
+            if(!is_array($groups)) {
+
+                $groups = array($groups);
+
+            }
+
+            // Go through $groups and see if any of them are in there
+            foreach($groups as $group) {
+
+                if(in_array($group, $user_groups)) $match = true;
+
+            }
+
+            return $match;
+
+
+        }
+
+        // they didn't specify a group
+        return false;
+
+
+    }
 }
