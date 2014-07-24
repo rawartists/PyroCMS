@@ -175,7 +175,7 @@ class EntryFormBuilder extends UiAbstract
 
                             // -------------------------------------
 
-                            ci()->session->set_flashdata('error', lang_label($this->messageSuccess));
+                            ci()->session->set_flashdata('success', lang_label($this->messageSuccess));
                         }
                     } else { // edit
                         if (!$this->entry->preSave($this->skips + $this->readonly) and $this->messageError) {
