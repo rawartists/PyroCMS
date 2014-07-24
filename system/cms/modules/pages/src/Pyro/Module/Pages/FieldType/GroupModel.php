@@ -21,9 +21,9 @@ class GroupModel extends Group implements RelationshipInterface
      *
      * @param $query
      */
-    public function getFieldTypeRelationshipResults($query)
+    public function getFieldTypeRelationshipResults($query, $field_slug)
     {
-
+        return $this->take(1000)->get();
     }
 
     /**
