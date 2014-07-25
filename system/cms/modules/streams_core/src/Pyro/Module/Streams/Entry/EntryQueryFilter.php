@@ -49,6 +49,24 @@ class EntryQueryFilter
 
             redirect(uri_string());
         }
+
+        // @todo
+        // this could use some cleaning, but this gives us an opportunity to set
+        // default filters using get params
+        $setDefault = ci()->input->get('setDefault');
+        if($setDefault == 'y') {
+
+            parse_str($_SERVER['QUERY_STRING'],$params);
+
+            // We don't need this
+            unset($params['setDefault']);
+            //die(print_r($params));
+            $this->applyFiltersGet($params);
+            redirect(uri_string());
+
+        }
+
+
     }
 
     public function getQuery()
@@ -179,10 +197,14 @@ class EntryQueryFilter
                 if (strpos($key, 'f-') !== false) {
                     $post[$this->getPostDataFilterKey($key)] = $value;
 
+
+                    //[market_id-is] => 14
+
                     unset($post[$key]);
                 }
             }
         }
+
 
         return $post;
     }
@@ -214,6 +236,31 @@ class EntryQueryFilter
         $prefix = $uri."-".$prefix;
 
         ci()->session->set_userdata($prefix . $this->getFilterKey(), $this->getPostData());
+    }
+
+    /**
+     * Apply filters for Get Params
+     */
+    protected function applyFiltersGet($params)
+    {
+
+        $uri = md5(ci()->uri->uri_string());
+
+        if (isset(ci()->module_details['slug'])) {
+            $prefix = ci()->module_details['slug'] . '_';
+        } else {
+            $prefix = null;
+        }
+
+        $prefix = $uri."-".$prefix;
+
+        // For now, I looked at how the post data was saved, and just sending that
+        // though, will need to be updated
+        $results = (count($params) > 0) ? $params : array();
+
+        //die(print_r($results));
+
+        ci()->session->set_userdata($prefix . $this->getFilterKey(), $results);
     }
 
     /**
