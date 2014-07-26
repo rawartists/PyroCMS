@@ -198,6 +198,16 @@ abstract class FieldTypeAbstract
         return $this;
     }
 
+    /**
+     * Set ParameterOverrides
+     *
+     * @param object $field
+     */
+    public function setParameterOverrides($overrides = array())
+    {
+        $this->field->parameterOverrides = $overrides;
+    }
+
     public function fieldSlug()
     {
         return $this->field->field_slug;
@@ -413,7 +423,31 @@ abstract class FieldTypeAbstract
      */
     public function getParameter($key, $default = null)
     {
+
+        // Need to see if we have an overrides
+        $overrides = $this->field->parameterOverrides;
+
+        // Make sure array isnt empty
+        if(count($overrides) > 0) {
+
+            // See if one exists for this field_slug
+            if(array_key_exists($this->field->field_slug, $overrides)) {
+
+                // See if this parameter exists for this field slug
+                if(array_key_exists($key,$overrides[$this->field->field_slug])) {
+
+                    return $overrides[$this->field->field_slug][$key];
+
+                }
+
+            }
+
+        }
+
         return $this->field->getParameter($key, $default);
+
+
+
     }
 
     /**
