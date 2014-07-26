@@ -165,6 +165,12 @@ class Choice extends FieldTypeAbstract
      */
     public function choicesToArray($type = 'dropdown', $choicesRaw = null, $required = 'no', $optgroups = true)
     {
+
+        $this->getParameter('choice_data');
+
+        // Anything we should skip on input
+        $skips = $this->getSkipChoices();
+
         if ($choicesRaw) {
             $lines = explode("\n", $choicesRaw);
         } else {
@@ -182,6 +188,9 @@ class Choice extends FieldTypeAbstract
                 $bits = explode(' : ', $line, 2);
 
                 $key_bit = trim($bits[0]);
+
+                // Should we skip this?
+                if(array_key_exists($key_bit, $skips)) continue;
 
                 if (count($bits) == 1) {
                     $choices[$key_bit] = lang_label($key_bit);
@@ -673,6 +682,29 @@ class Choice extends FieldTypeAbstract
             'input'        => form_input('max_choices', $value),
             'instructions' => lang('streams:choice.checkboxes_only')
         );
+    }
+
+    /**
+     * See if skip choices per set un Ui overrides and returns the values or an empty array
+     *
+     * @return array|bool
+     */
+    public function getSkipChoices(){
+
+        // Get the skips Parameter. This isn't a default parameter, but one that can be in overrides
+        $skips = $this->getParameter('skip_choices');
+
+        // Does it even exist?
+        if(!is_array($skips)) return array();
+
+        // If the array is empty, skip it
+        if(count($skips) <= 0) return false;
+
+        // We have a match, let's send back an array
+        // Need to make sure the choice value is the index key, the value is not important
+        // since we are skipping, we don't care about that
+        return array_flip($skips);
+
     }
 
 }
