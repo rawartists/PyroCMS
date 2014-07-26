@@ -445,6 +445,7 @@ abstract class UiAbstract extends Fluent
             /*->orderBy('id')
             ->sort('desc')*/
             ->paginationUri(uri_string())
+            ->parameterOverrides(array())
             ->returnValidationRules(false)
             ->recaptcha(false)
             ->readonly(array())
