@@ -269,6 +269,9 @@ class EntryFormBuilder extends UiAbstract
                 // Set defaults
                 $type->setDefaults($this->defaults);
 
+                // Get parameter overrides from the Ui
+                $type->setParameterOverrides($this->parameterOverrides);
+
                 // Set the error if there is one
                 /*                $field->error = ci()->form_validation->error($field->form_slug);
 
