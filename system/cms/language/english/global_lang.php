@@ -94,6 +94,9 @@ $lang['global:processing']    = 'Processing';
 $lang['global:waiting']       = 'Waiting';
 $lang['global:missing']       = 'Missing';
 $lang['global:avatar']        = 'Avatar';
+$lang['global:comments']      = 'Comments';
+$lang['global:attachments']   = 'Attachments';
+$lang['global:update']        = 'Update';
 
 
 $lang['all_right_reserved'] = 'All Rights Reserved.';
