@@ -97,6 +97,8 @@ $lang['global:avatar']        = 'Avatar';
 $lang['global:comments']      = 'Comments';
 $lang['global:attachments']   = 'Attachments';
 $lang['global:update']        = 'Update';
+$lang['global:close']         = 'Close';
+$lang['global:remind']        = 'Remind';
 
 
 $lang['all_right_reserved'] = 'All Rights Reserved.';
