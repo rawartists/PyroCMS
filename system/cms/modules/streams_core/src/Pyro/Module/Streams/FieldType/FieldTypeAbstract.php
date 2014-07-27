@@ -206,6 +206,8 @@ abstract class FieldTypeAbstract
     public function setParameterOverrides($overrides = array())
     {
         $this->field->parameterOverrides = $overrides;
+
+        return $this;
     }
 
     public function fieldSlug()
@@ -429,6 +431,8 @@ abstract class FieldTypeAbstract
 
         // Make sure array isnt empty
         if(count($overrides) > 0) {
+
+
 
             // See if one exists for this field_slug
             if(array_key_exists($this->field->field_slug, $overrides)) {
