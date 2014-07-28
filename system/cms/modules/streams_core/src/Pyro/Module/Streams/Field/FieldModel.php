@@ -478,7 +478,7 @@ class FieldModel extends Eloquent
         throw new FieldModelNotFoundException;
     }
 
-    public static function getFieldOptions($skips = array(), $key = 'id')
+    public static function getFieldOptions($skips = array(), $key = 'field_slug')
     {
         $options = array();
 
