@@ -224,9 +224,9 @@ class Admin extends Admin_Controller
                 )
                 ->redirects(current_url())
                 ->render();
+        } else {
+            redirect('admin/pages');
         }
-
-        redirect('admin/pages');
     }
     /**
      * Edit
