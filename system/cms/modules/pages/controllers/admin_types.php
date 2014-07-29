@@ -146,6 +146,8 @@ class Admin_types extends Admin_Controller
         $data = new stdClass;
         $data->page_type = new stdClass;
 
+        $stream_slug = null;
+
         if ($this->form_validation->run() and ! PageType::slugExists($this->input->post('slug'))) {
             $input = $this->input->post();
 
@@ -163,7 +165,7 @@ class Admin_types extends Admin_Controller
             }
 
             // If they've indicated we create a new stream
-            if ($input['stream_id'] == 'new') {
+            elseif ($input['stream_id'] == 'new') {
                 // Since this an automatically generated stream, we're not going to
                 // worry about auto-generating a slug as long as it doesn't conflict.
                 // We'll just append incrementing numbers to it until we get closer.
@@ -180,6 +182,10 @@ class Admin_types extends Admin_Controller
 
                 //$input['stream_id'] = $this->streams->streams->add_stream(lang('page_types:list_title_sing').' '.$input['title'], $stream_slug, 'pages', 'pages_');
                 $input['stream_id'] = $stream->id;
+            } elseif(is_numeric($input['stream_id'])) {
+                $stream = StreamModel::find($input['stream_id']);
+
+                $stream_slug = $stream->stream_slug;
             }
 
             // Insert the page type
@@ -192,7 +198,7 @@ class Admin_types extends Admin_Controller
                     //'meta_keywords' 	=> isset($input['meta_keywords']) ? $this->keywords->process($input['meta_keywords']) : '',
                     'meta_description' 	=> isset($input['meta_description']) ? $input['meta_description'] : null,
                     'theme_layout' 		=> $input['theme_layout'],
-                    'body' 				=> ($input['body'] ? $input['body'] : false),
+                    'body' 				=> isset($input['body']) ? $input['body'] : null,
                     'css' 				=> $input['css'],
                     'js' 				=> $input['js'],
                     'content_label'		=> $this->input->post('content_label'),
@@ -200,22 +206,25 @@ class Admin_types extends Admin_Controller
                     'save_as_files'		=> (isset($input['save_as_files']) and $input['save_as_files'] == 'y') ? 'y' : 'n'
                 ));
 
-            FieldModel::assignField($stream_slug, 'pages', 'title', array('is_required' => true));
-            FieldModel::assignField($stream_slug, 'pages', 'slug', array('is_required' => true));
-            FieldModel::assignField($stream_slug, 'pages', 'class', array());
-            FieldModel::assignField($stream_slug, 'pages', 'css', array());
-            FieldModel::assignField($stream_slug, 'pages', 'js', array());
-            FieldModel::assignField($stream_slug, 'pages', 'meta_title', array());
-            FieldModel::assignField($stream_slug, 'pages', 'meta_keywords', array());
-            FieldModel::assignField($stream_slug, 'pages', 'meta_description', array());
-            FieldModel::assignField($stream_slug, 'pages', 'meta_robots_no_index', array());
-            FieldModel::assignField($stream_slug, 'pages', 'meta_robots_no_follow', array());
-            FieldModel::assignField($stream_slug, 'pages', 'rss_enabled', array());
-            FieldModel::assignField($stream_slug, 'pages', 'rss_enabled', array());
-            FieldModel::assignField($stream_slug, 'pages', 'comments_enabled', array());
-            FieldModel::assignField($stream_slug, 'pages', 'status', array('is_required' => true));
-            FieldModel::assignField($stream_slug, 'pages', 'is_home', array());
-            FieldModel::assignField($stream_slug, 'pages', 'strict_uri', array());
+            if ($stream_slug) {
+                FieldModel::assignField($stream_slug, 'pages', 'title', array('is_required' => true));
+                FieldModel::assignField($stream_slug, 'pages', 'slug', array('is_required' => true));
+                FieldModel::assignField($stream_slug, 'pages', 'class', array());
+                FieldModel::assignField($stream_slug, 'pages', 'css', array());
+                FieldModel::assignField($stream_slug, 'pages', 'js', array());
+                FieldModel::assignField($stream_slug, 'pages', 'body', array());
+                FieldModel::assignField($stream_slug, 'pages', 'meta_title', array());
+                FieldModel::assignField($stream_slug, 'pages', 'meta_keywords', array());
+                FieldModel::assignField($stream_slug, 'pages', 'meta_description', array());
+                FieldModel::assignField($stream_slug, 'pages', 'meta_robots_no_index', array());
+                FieldModel::assignField($stream_slug, 'pages', 'meta_robots_no_follow', array());
+                FieldModel::assignField($stream_slug, 'pages', 'rss_enabled', array());
+                FieldModel::assignField($stream_slug, 'pages', 'rss_enabled', array());
+                FieldModel::assignField($stream_slug, 'pages', 'comments_enabled', array());
+                FieldModel::assignField($stream_slug, 'pages', 'status', array('is_required' => true));
+                FieldModel::assignField($stream_slug, 'pages', 'is_home', array());
+                FieldModel::assignField($stream_slug, 'pages', 'strict_uri', array());
+            }
 
             // Success or fail?
             if ($id > 0) {
