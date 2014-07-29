@@ -165,7 +165,7 @@ class Admin_types extends Admin_Controller
             }
 
             // If they've indicated we create a new stream
-            elseif ($input['stream_id'] == 'new') {
+            if ($input['stream_id'] == 'new') {
                 // Since this an automatically generated stream, we're not going to
                 // worry about auto-generating a slug as long as it doesn't conflict.
                 // We'll just append incrementing numbers to it until we get closer.
@@ -182,7 +182,9 @@ class Admin_types extends Admin_Controller
 
                 //$input['stream_id'] = $this->streams->streams->add_stream(lang('page_types:list_title_sing').' '.$input['title'], $stream_slug, 'pages', 'pages_');
                 $input['stream_id'] = $stream->id;
-            } elseif(is_numeric($input['stream_id'])) {
+            }
+
+            if(is_numeric($input['stream_id']) and $input['stream_id'] > 0) {
                 $stream = StreamModel::find($input['stream_id']);
 
                 $stream_slug = $stream->stream_slug;
