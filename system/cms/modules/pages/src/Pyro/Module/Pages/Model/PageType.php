@@ -185,7 +185,10 @@ class PageType extends Eloquent
     public function delete($delete_stream = false)
     {
         // Are we going to delete the stream?
-        if ($delete_stream and $this->stream) {
+        if ($delete_stream and
+            $this->stream and
+            $this->stream->stream_namespace == 'pages' and
+            $this->whereStreamId($this->stream->id)->count() < 2) {
             $this->stream->delete();
         }
 
