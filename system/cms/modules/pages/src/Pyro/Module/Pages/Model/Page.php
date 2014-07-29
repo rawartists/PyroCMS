@@ -568,7 +568,7 @@ class Page extends Eloquent
             'parent_id'  => $parentId,
             'entry_type' => get_class($entry),
             'entry_id'   => $entry->id,
-            'is_home'    => $entry->is_home,
+            'is_home'    => $entry->is_home ?: 0,
             'uri'        => $this->uri($entry),
         );
 
