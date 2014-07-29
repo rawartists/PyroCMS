@@ -373,7 +373,11 @@ class FieldAssignmentModel extends FieldModel
      */
     public function getIsLockedAttribute($isLocked)
     {
-        return $this->field->is_locked;
+        if ($this->field) {
+            return $this->field->is_locked;
+        }
+
+        return false;
     }
 
     /**
