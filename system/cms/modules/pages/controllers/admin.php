@@ -205,32 +205,26 @@ class Admin extends Admin_Controller
      */
     public function create()
     {
-        if (!$pageType = $this->pageTypes->find($this->input->get('page_type'))) {
-            redirect('admin/pages');
+        if ($pageType = $this->pageTypes->find($this->input->get('page_type'))) {
+
+            $entryModelClass = StreamModel::getEntryModelClass(
+                $pageType->stream->stream_slug,
+                $pageType->stream->stream_namespace
+            );
+
+            $pages = $this->pages;
+
+            $this->ui
+                ->title(lang('pages:create_title'))
+                ->form($entryModelClass)
+                ->onSaved(
+                    function ($entry) use ($pages) {
+                        $pages->createFromEntry($entry, ci()->input->get('page_type'), ci()->input->get('parent'));
+                    }
+                )
+                ->redirects(current_url())
+                ->render();
         }
-
-        if ($parentId = $this->input->get('parent')) {
-            $parentPage = Page::find($parentId);
-        } else {
-            $parentPage = null;
-        }
-
-        $entryModelClass = StreamModel::getEntryModelClass(
-            $pageType->stream->stream_slug,
-            $pageType->stream->stream_namespace
-        );
-
-        $pages = $this->pages;
-
-        $this->ui
-            ->title(lang('pages:create_title'))
-            ->form($entryModelClass)
-            ->onSaved(
-                function ($entry) use ($pages) {
-                    $pages->createFromEntry($entry, ci()->input->get('page_type'), ci()->input->get('parent'));
-                }
-            )
-            ->render();
     }
     /**
      * Edit
