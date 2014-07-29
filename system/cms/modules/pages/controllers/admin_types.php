@@ -106,6 +106,8 @@ class Admin_types extends Admin_Controller
         $this->lang->load('page_types');
         $this->load->library('form_validation');
 
+        $this->fields = new FieldModel();
+
         $this->fieldUi = new FieldUi();
 
         $this->pageType = new PageType();
@@ -156,7 +158,7 @@ class Admin_types extends Admin_Controller
                 $stream_slug = slugify($input['title'], '_', true);
 
                 // check to see if they want us to make a table and then see if we can
-                if ( ! $stream_slug and $this->db->table_exists($stream_slug)) {
+                if ( ! $stream_slug and StreamModel::tableExists($stream_slug, 'pages_')) {
                     $this->session->set_flashdata('notice', lang('page_types:already_exist_error'));
                     redirect('admin/pages/types/create');
                 } else {
@@ -208,24 +210,18 @@ class Admin_types extends Admin_Controller
                     'save_as_files'		=> (isset($input['save_as_files']) and $input['save_as_files'] == 'y') ? 'y' : 'n'
                 ));
 
-            if ($stream_slug) {
-                FieldModel::assignField($stream_slug, 'pages', 'title', array('is_required' => true));
-                FieldModel::assignField($stream_slug, 'pages', 'slug', array('is_required' => true));
-                FieldModel::assignField($stream_slug, 'pages', 'class', array());
-                FieldModel::assignField($stream_slug, 'pages', 'css', array());
-                FieldModel::assignField($stream_slug, 'pages', 'js', array());
-                FieldModel::assignField($stream_slug, 'pages', 'body', array());
-                FieldModel::assignField($stream_slug, 'pages', 'meta_title', array());
-                FieldModel::assignField($stream_slug, 'pages', 'meta_keywords', array());
-                FieldModel::assignField($stream_slug, 'pages', 'meta_description', array());
-                FieldModel::assignField($stream_slug, 'pages', 'meta_robots_no_index', array());
-                FieldModel::assignField($stream_slug, 'pages', 'meta_robots_no_follow', array());
-                FieldModel::assignField($stream_slug, 'pages', 'rss_enabled', array());
-                FieldModel::assignField($stream_slug, 'pages', 'rss_enabled', array());
-                FieldModel::assignField($stream_slug, 'pages', 'comments_enabled', array());
-                FieldModel::assignField($stream_slug, 'pages', 'status', array('is_required' => true));
-                FieldModel::assignField($stream_slug, 'pages', 'is_home', array());
-                FieldModel::assignField($stream_slug, 'pages', 'strict_uri', array());
+            if ($stream) {
+
+                $fields = $this->fields->findManyByNamespace('pages');
+
+                foreach($fields as $field) {
+                    if (in_array($field->field_slug, array('title', 'slug', 'status'))) {
+                        $assignData = array('is_required' => true);
+                    } else {
+                        $assignData = null;
+                    }
+                    $stream->assignField($field, $assignData);
+                }
             }
 
             // Success or fail?
