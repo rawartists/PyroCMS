@@ -124,6 +124,7 @@ $lang['global:end']         = 'End';
 $lang['global:ending']      = 'Ending';
 $lang['global:menu']        = 'Menu';
 $lang['global:main_menu']   = 'Main Menu';
+$lang['global:return_to']   = 'Return to';
 
 $lang['global:keywords'] = 'Keywords';
 
