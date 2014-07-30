@@ -87,7 +87,7 @@ class PageType extends Eloquent
         if (parent::count_by(array('slug' => $slug)) == 0) {
             return true;
         } else {
-            $this->form_validation->set_message('_check_pt_slug', lang('page_types:_check_pt_slug_msg'));
+            ci()->form_validation->set_message('_check_pt_slug', lang('page_types:_check_pt_slug_msg'));
 
             return false;
         }
@@ -191,13 +191,13 @@ class PageType extends Eloquent
             $this->stream->delete();
         }
 
-        $instance = new static;
-
         // If we are saving as files, we need to remove the page
         // layout files to keep things tidy.
-        $instance->removePageLayoutFiles($this->slug, true);
+        $this->removePageLayoutFiles($this->slug, true);
 
-        $instance->flushCacheCollection();
+        $this->flushCacheCollection();
+
+        ci()->cache->forget('pageTypesCount');
 
         // Delete the actual page entry.
         return parent::delete();
@@ -247,5 +247,12 @@ class PageType extends Eloquent
         }
 
         return null;
+    }
+
+    public function save(array $options = array())
+    {
+        ci()->cache->forget('pageTypesCount');
+
+        return parent::save($options);
     }
 }
