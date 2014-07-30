@@ -242,14 +242,14 @@ class Admin_types extends Admin_Controller
                 $this->cache->forget('page_m');
 
                 ci()->cache->collection($this->pageType->getCacheCollectionKey())->flush();
-
+                ci()->cache->forget('pageTypesCount');
                 $this->pageType->flushCacheCollection();
 
                 // Event: page_type_created
                 Events::trigger('page_type_created', $id);
 
                 if ($this->input->post('stream_id') == 'new') {
-                    $this->session->set_flashdata('success', lang('page_types:create_success_add_fields'));
+                    ci()->session->set_flashdata('success', lang('page_types:create_success_add_fields'));
 
                     // send them off to create their first fields
                     redirect('admin/pages/types/fields/' . $id);
