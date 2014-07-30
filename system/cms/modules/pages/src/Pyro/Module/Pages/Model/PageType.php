@@ -117,6 +117,8 @@ class PageType extends Eloquent
         write_file($folder.'/'.$input['slug'].'.html', $input['body']);
         write_file($folder.'/'.$input['slug'].'.js', $input['js']);
         write_file($folder.'/'.$input['slug'].'.css', $input['css']);
+
+        return true;
     }
 
     /**
