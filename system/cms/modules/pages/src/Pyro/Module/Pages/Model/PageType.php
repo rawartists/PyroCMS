@@ -87,7 +87,7 @@ class PageType extends Eloquent
         if (parent::count_by(array('slug' => $slug)) == 0) {
             return true;
         } else {
-            $this->form_validation->set_message('_check_pt_slug', lang('page_types:_check_pt_slug_msg'));
+            ci()->form_validation->set_message('_check_pt_slug', lang('page_types:_check_pt_slug_msg'));
 
             return false;
         }
@@ -117,6 +117,8 @@ class PageType extends Eloquent
         write_file($folder.'/'.$input['slug'].'.html', $input['body']);
         write_file($folder.'/'.$input['slug'].'.js', $input['js']);
         write_file($folder.'/'.$input['slug'].'.css', $input['css']);
+
+        return true;
     }
 
     /**
@@ -185,20 +187,17 @@ class PageType extends Eloquent
     public function delete($delete_stream = false)
     {
         // Are we going to delete the stream?
-        if ($delete_stream and
-            $this->stream and
-            $this->stream->stream_namespace == 'pages' and
-            $this->whereStreamId($this->stream->id)->count() < 2) {
+        if ($delete_stream and $this->stream) {
             $this->stream->delete();
         }
 
-        $instance = new static;
-
         // If we are saving as files, we need to remove the page
         // layout files to keep things tidy.
-        $instance->removePageLayoutFiles($this->slug, true);
+        $this->removePageLayoutFiles($this->slug, true);
 
-        $instance->flushCacheCollection();
+        $this->flushCacheCollection();
+
+        ci()->cache->forget('pageTypesCount');
 
         // Delete the actual page entry.
         return parent::delete();
@@ -248,5 +247,12 @@ class PageType extends Eloquent
         }
 
         return null;
+    }
+
+    public function save(array $options = array())
+    {
+        ci()->cache->forget('pageTypesCount');
+
+        return parent::save($options);
     }
 }

@@ -106,6 +106,8 @@ class Admin_types extends Admin_Controller
         $this->lang->load('page_types');
         $this->load->library('form_validation');
 
+        $this->fields = new FieldModel();
+
         $this->fieldUi = new FieldUi();
 
         $this->pageType = new PageType();
@@ -156,7 +158,7 @@ class Admin_types extends Admin_Controller
                 $stream_slug = slugify($input['title'], '_', true);
 
                 // check to see if they want us to make a table and then see if we can
-                if ( ! $stream_slug and $this->db->table_exists($stream_slug)) {
+                if ( ! $stream_slug and StreamModel::tableExists($stream_slug, 'pages_')) {
                     $this->session->set_flashdata('notice', lang('page_types:already_exist_error'));
                     redirect('admin/pages/types/create');
                 } else {
@@ -240,14 +242,14 @@ class Admin_types extends Admin_Controller
                 $this->cache->forget('page_m');
 
                 ci()->cache->collection($this->pageType->getCacheCollectionKey())->flush();
-
+                ci()->cache->forget('pageTypesCount');
                 $this->pageType->flushCacheCollection();
 
                 // Event: page_type_created
                 Events::trigger('page_type_created', $id);
 
                 if ($this->input->post('stream_id') == 'new') {
-                    $this->session->set_flashdata('success', lang('page_types:create_success_add_fields'));
+                    ci()->session->set_flashdata('success', lang('page_types:create_success_add_fields'));
 
                     // send them off to create their first fields
                     redirect('admin/pages/types/fields/' . $id);
