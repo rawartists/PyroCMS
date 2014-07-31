@@ -569,10 +569,13 @@ class Page extends Eloquent
             'entry_type' => get_class($entry),
             'entry_id'   => $entry->id,
             'is_home'    => $entry->is_home ?: 0,
+            'slug'       => $entry->slug,
             'uri'        => $this->uri($entry),
         );
 
         $this->insert($page);
+
+        $this->updateLookup($this->whereParentId(0)->get());
 
         $this->flushCacheCollection();
     }
