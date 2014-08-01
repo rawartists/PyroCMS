@@ -132,7 +132,16 @@ class Admin extends Admin_Controller
     {
         $page = $this->pages->find($id);
 
-        $this->load->view('admin/ajax/page_details', compact('page'));
+        // Do we have more than one page type? If we don't, no need to have a modal
+        // ask them to choose a page type.
+        if (!$pageTypesCount = ci()->cache->get('pageTypesCount')) {
+            $pageTypesCount = ci()->pdb->table('page_types')->count();
+            ci()->cache->put('pageTypesCount', $pageTypesCount, 30);
+        }
+
+        $firstPageType = PageType::limit(1)->first();
+
+        $this->load->view('admin/ajax/page_details', compact('page', 'pageTypesCount', 'firstPageType'));
     }
 
     /**
@@ -240,6 +249,8 @@ class Admin extends Admin_Controller
         role_or_die('pages', 'edit_live');
 
         $page = $this->pages->with('type')->find($id);
+
+        $this->pages->updateLookup($this->pages->whereParentId(0)->get());
 
         $this->ui
             ->title(sprintf(lang('pages:edit_title'), $page->entry->title))
