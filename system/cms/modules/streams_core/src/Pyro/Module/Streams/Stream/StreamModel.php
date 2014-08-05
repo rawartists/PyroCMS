@@ -508,7 +508,9 @@ class StreamModel extends Eloquent
 
                 $assignmentModel->setRawAttributes($assignment);
 
-                $assignmentModel->setRelation('field', $fieldModel);
+                if (isset($fieldModel)) {
+                    $assignmentModel->setRelation('field', $fieldModel);
+                }
 
                 $assignments[] = $assignmentModel;
             }
