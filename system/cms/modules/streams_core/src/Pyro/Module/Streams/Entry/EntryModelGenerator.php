@@ -171,18 +171,20 @@ class EntryModelGenerator extends Generator
             // Field attributes array
             $string .= "\n{$this->s(16)}'field' => array(";
 
-            foreach ($assignment->field->getAttributes() as $key => $value) {
+            if ($assignment->field) {
+                foreach ($assignment->field->getAttributes() as $key => $value) {
 
-                if ($key == 'field_data') {
+                    if ($key == 'field_data') {
 
-                    $string .= $this->compileUnserializable($key, $value, 20);
+                        $string .= $this->compileUnserializable($key, $value, 20);
 
-                } else {
+                    } else {
 
-                    $value = $this->adjustValue($value, in_array($key, array('field_name')));
+                        $value = $this->adjustValue($value, in_array($key, array('field_name')));
 
-                    $string .= "\n{$this->s(20)}'{$key}' => {$value},";
+                        $string .= "\n{$this->s(20)}'{$key}' => {$value},";
 
+                    }
                 }
             }
 
